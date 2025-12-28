@@ -47,7 +47,7 @@ This repository is intended for developers who want to contribute to the platfor
 - Docker and Docker Compose
 - Python 3.11+
 - Node.js 18+
-- Tested development environments: macOS (Apple Silicon/arm64), Linux (amd64), and WSL2 (Ubuntu)
+- Tested development environments: macOS (Apple Silicon/arm64), Ubuntu Linux (amd64), and WSL2 (Ubuntu)
 
 ### Building from Source
 
