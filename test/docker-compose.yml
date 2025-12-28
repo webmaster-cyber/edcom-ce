@@ -1,0 +1,53 @@
+version: '3.8'
+
+services:
+  database:
+    image: edcom/database-dev
+    container_name: edcom-database-test
+    volumes:
+      - "../schema:/docker-entrypoint-initdb.d"
+      - "./logs/postgres:/logs/postgres"
+    healthcheck:
+      test: ["CMD", "pg_isready", "-U", "edcom"]
+      interval: 10s
+      timeout: 5s
+      retries: 5000
+    platform: linux/arm64/v8
+    build:
+      context: ..
+      dockerfile: services/database.Dockerfile
+    ports:
+      - "127.0.0.1:5432:5432"
+  cache:
+    image: redis:7.0.8-alpine
+    platform: linux/arm64/v8
+    container_name: edcom-cache-test
+    command: redis-server --appendonly yes
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5000
+  api:
+    image: edcom/api-dev
+    platform: linux/arm64/v8
+    container_name: edcom-api-test
+    volumes:
+      - "../data/setup:/setup"
+      - "../data/logs:/logs"
+      - "../data/buckets:/buckets"
+      - "../config:/config"
+      - "../api:/api"
+      - "../scripts:/scripts"
+      - ".:/test"
+    depends_on:
+      database:
+        condition: service_healthy
+      cache:
+        condition: service_healthy
+    build:
+      context: ..
+      dockerfile: services/api.Dockerfile
+    environment:
+      - development=true
+    command: sh -c '/scripts/run_db_migrations.py && cd /test && ./setup.py && python -m unittest discover'

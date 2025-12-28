@@ -1,0 +1,10 @@
+*.pyc
+.DS_Store
+node_modules
+config/edcom.json
+config/linkcerts
+config/commercial_license.key
+machine-id
+.env
+.build
+test/logs

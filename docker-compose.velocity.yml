@@ -1,0 +1,12 @@
+
+services:
+  velocity:
+    image: edcom/velocity
+    container_name: edcom-velocity
+    platform: linux/amd64
+    network_mode: "host"
+    volumes:
+      - "./conf:/conf"
+      - "./mail:/mail"
+      - "./logs:/logs"
+    restart: unless-stopped

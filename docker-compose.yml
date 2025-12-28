@@ -1,0 +1,102 @@
+
+x-api-fields:
+  &api-fields
+  image: edcom/api
+  platform: linux/amd64
+  restart: unless-stopped
+  volumes:
+    - "./data/buckets:/buckets"
+    - "./data/setup:/setup"
+    - "./data/logs:/logs"
+    - "./config:/config"
+  depends_on:
+    database:
+      condition: service_healthy
+    cache:
+      condition: service_healthy
+
+name: edcom
+services:
+  database:
+    image: edcom/database
+    platform: linux/amd64
+    container_name: edcom-database
+    restart: unless-stopped
+    shm_size: 1gb
+    volumes:
+      - "./schema:/docker-entrypoint-initdb.d"
+      - "./data/database:/var/lib/postgresql/data"
+      - "./data/logs/postgres:/logs/postgres"
+    healthcheck:
+      test: ["CMD", "pg_isready", "-U", "edcom"]
+      interval: 10s
+      timeout: 5s
+      retries: 5000
+  cache:
+    image: redis:7.0.8-alpine
+    platform: linux/amd64
+    container_name: edcom-cache
+    restart: unless-stopped
+    command: redis-server --appendonly yes
+    volumes:
+      - "./data/cache:/data"
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5000
+  api:
+    container_name: edcom-api
+    << : *api-fields
+  tasks:
+    << : *api-fields
+#    container_name: edcom-tasks
+    environment:
+      - celery_worker=true
+    command: sh -c '/scripts/run_db_migrations.py && celery -A api.app.tasks worker --loglevel=INFO --concurrency `/scripts/num_tasks.py celery` -f /logs/app.log'
+  cron:
+    << : *api-fields
+    container_name: edcom-cron
+    command: sh -c '/scripts/run_db_migrations.py && /usr/sbin/crond -f'
+  webhooks:
+    << : *api-fields
+    container_name: edcom-webhooks
+    command: sh -c '/scripts/run_db_migrations.py && /scripts/process_webhooks.py'
+
+  segments:
+    << : *api-fields
+    container_name: edcom-segments
+    command: sh -c '/scripts/run_db_migrations.py && /scripts/update_segments.py'
+
+  smtprelay:
+    image: edcom/smtprelay
+    platform: linux/amd64
+    container_name: edcom-smtprelay
+    restart: unless-stopped
+    volumes:
+      - "./data/smtpcert:/cert"
+    ports:
+      - "${PLATFORM_IP}:587:587"
+      - "${PLATFORM_IP}:2525:2525"
+      - "${PLATFORM_IP}:8025:8025"
+  screenshot:
+    image: edcom/screenshot
+    platform: linux/amd64
+    container_name: edcom-screenshot
+    restart: unless-stopped
+  proxy:
+    image: edcom/proxy
+    platform: linux/amd64
+    container_name: edcom-proxy
+    restart: unless-stopped
+    ports:
+      - "${PLATFORM_IP}:80:80"
+      - "${PLATFORM_IP}:443:443"
+    depends_on:
+      - api
+    volumes:
+      - "./data/buckets/images:/usr/share/nginx/html/i"
+      - "./data/buckets/transfer:/usr/share/nginx/html/transfer"
+      - "./data/logs/nginx:/var/log/nginx"
+      - "./data/letsencrypt-challenge/.well-known/acme-challenge:/usr/share/nginx/html/.well-known/acme-challenge"
+      - "./config:/config"

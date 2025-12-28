@@ -1,0 +1,97 @@
+{
+  "type": "one-column-empty",
+  "uuid": "81a68070-09da-4d7a-ab54-943145480550",
+  "empty": false,
+  "locked": false,
+  "synced": true,
+  "columns": [
+    {
+      "uuid": "e818d637-9e02-4061-aa24-d6c0c5c145ab",
+      "style": {
+        "border-top": "0px solid transparent",
+        "border-left": "0px solid transparent",
+        "padding-top": "5px",
+        "border-right": "0px solid transparent",
+        "padding-left": "0px",
+        "border-bottom": "0px solid transparent",
+        "padding-right": "0px",
+        "padding-bottom": "5px",
+        "background-color": "transparent"
+      },
+      "modules": [
+        {
+          "type": "mailup-bee-newsletter-modules-paragraph",
+          "uuid": "ec753074-d764-4ccb-b812-1b02ef38af36",
+          "locked": false,
+          "descriptor": {
+            "style": {
+              "padding-top": "10px",
+              "padding-left": "10px",
+              "padding-right": "10px",
+              "padding-bottom": "10px"
+            },
+            "paragraph": {
+              "html": "<p>Copyright {{YEAR}} {{COMPANYNAME}}</p>\n<p>123 Example St.</p>\n<p>Example, EX, USA 12345</p>\n<p>&nbsp;</p>\n<p>If you no longer wish to receive these messages, you can <code data-bee-type=\"speciallink\" data-bee-code=\"\"><a href=\"{{!!unsublink}}\" target=\"_blank\" rel=\"noopener\">unsubscribe</a></code>.</p>",
+              "style": {
+                "color": "#000000",
+                "direction": "ltr",
+                "font-size": "11px",
+                "text-align": "center",
+                "font-family": "inherit",
+                "font-weight": "400",
+                "line-height": "120%",
+                "letter-spacing": "0px"
+              },
+              "computedStyle": {
+                "linkColor": "#0068a5",
+                "paragraphSpacing": "0px"
+              }
+            },
+            "computedStyle": {
+              "hideContentOnAmp": false,
+              "hideContentOnHtml": false,
+              "hideContentOnMobile": false,
+              "hideContentOnDesktop": false
+            }
+          }
+        }
+      ],
+      "grid-columns": 12
+    }
+  ],
+  "content": {
+    "style": {
+      "color": "#000000",
+      "width": "500px",
+      "border-top": "0px solid transparent",
+      "border-left": "0px solid transparent",
+      "border-right": "0px solid transparent",
+      "border-bottom": "0px solid transparent",
+      "border-radius": "0px",
+      "background-color": "transparent",
+      "background-image": "none",
+      "background-repeat": "no-repeat",
+      "background-position": "top left"
+    },
+    "computedStyle": {
+      "verticalAlign": "top",
+      "hideContentOnMobile": false,
+      "rowColStackOnMobile": true,
+      "hideContentOnDesktop": false,
+      "rowReverseColStackOnMobile": false
+    }
+  },
+  "metadata": {
+    "name": "Sticky Footer",
+    "type": "sticky-footer"
+  },
+  "webFonts": [],
+  "container": {
+    "style": {
+      "background-color": "transparent",
+      "background-image": "none",
+      "background-repeat": "no-repeat",
+      "background-position": "top left"
+    }
+  }
+}

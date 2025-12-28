@@ -1,0 +1,22 @@
+{
+  "app": {
+    "admin_url": "http://your_domain_name",
+    "pixabay_key": "",
+    "mg_validate_key": "",
+    "zendesk_host": "",
+    "zendesk_user": "",
+    "zendesk_key": "",
+    "support_email": "",
+    "debug": "",
+    "sql_trace": "",
+    "segment_trace": "",
+    "max_send_limit": "1000",
+    "beefree_proxy_url": "https://beefree.emaildelivery.com",
+    "beefree_client_id": "",
+    "beefree_client_secret": "",
+    "beefree_cs_api_key": ""
+  },
+  "smtprelay": {
+    "smtphost": "your_relay_smtp_hostname"
+  }
+}

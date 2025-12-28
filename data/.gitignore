@@ -1,0 +1,14 @@
+database
+cache
+queue
+smtpcert
+velocity
+logs
+buckets/transfer/*
+!buckets/transfer/README.md
+buckets/images/*
+!buckets/images/README.md
+buckets/blocks/*
+!buckets/blocks/README.md
+buckets/data/*
+!buckets/data/README.md

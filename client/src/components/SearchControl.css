@@ -1,0 +1,10 @@
+input#search {
+  width: 250px;
+  padding-right: 30px;
+}
+
+@media screen and (max-width: 768px) {
+  input#search {
+    width: 150px;
+  }
+}
