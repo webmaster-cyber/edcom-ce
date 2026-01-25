@@ -140,7 +140,7 @@ export function FormsPage() {
                         onClick={() => navigate(`/forms/settings?id=${form.id}`)}
                         className="text-left"
                       >
-                        <span className="font-medium text-text-primary hover:text-brand-primary">
+                        <span className="font-medium text-text-primary hover:text-primary">
                           {form.name}
                         </span>
                         {form.disabled && (

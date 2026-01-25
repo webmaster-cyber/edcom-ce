@@ -374,7 +374,7 @@ export function FormSettingsPage() {
                       type="checkbox"
                       checked={disabled}
                       onChange={(e) => setDisabled(e.target.checked)}
-                      className="h-4 w-4 rounded border-gray-300 text-brand-primary focus:ring-brand-primary"
+                      className="h-4 w-4 rounded border-gray-300 text-primary focus:ring-primary"
                     />
                     <span className="text-sm text-text-primary">
                       Disable form (will not accept submissions)

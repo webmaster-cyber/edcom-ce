@@ -118,7 +118,7 @@ export function WebhooksPage() {
                         onClick={() => navigate(`/integrations/webhooks/edit?id=${webhook.id}`)}
                         className="text-left"
                       >
-                        <span className="font-medium text-text-primary hover:text-brand-primary">
+                        <span className="font-medium text-text-primary hover:text-primary">
                           {webhook.name || 'Unnamed webhook'}
                         </span>
                       </button>

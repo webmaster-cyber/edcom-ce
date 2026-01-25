@@ -47,6 +47,13 @@ import { TransactionalSettingsPage } from './features/transactional/Transactiona
 import { WebhooksPage } from './features/integrations/WebhooksPage'
 import { WebhookEditPage } from './features/integrations/WebhookEditPage'
 import { ConnectPage } from './features/integrations/ConnectPage'
+import { SuppressionPage } from './features/suppression/SuppressionPage'
+import { SuppressionEditPage } from './features/suppression/SuppressionEditPage'
+import { ExclusionAddPage } from './features/suppression/ExclusionAddPage'
+import { ThrottlesPage } from './features/throttles/ThrottlesPage'
+import { ThrottleEditPage } from './features/throttles/ThrottleEditPage'
+import { ChangePasswordPage } from './features/settings/ChangePasswordPage'
+import { ExportsPage } from './features/settings/ExportsPage'
 import { Spinner } from './components/ui/Spinner'
 import { useEffect } from 'react'
 
@@ -157,6 +164,14 @@ export default function App() {
                   <Route path="/integrations/webhooks" element={<WebhooksPage />} />
                   <Route path="/integrations/webhooks/edit" element={<WebhookEditPage />} />
                   <Route path="/connect" element={<ConnectPage />} />
+                  <Route path="/suppression" element={<SuppressionPage />} />
+                  <Route path="/suppression/new" element={<SuppressionEditPage />} />
+                  <Route path="/suppression/edit" element={<SuppressionEditPage />} />
+                  <Route path="/exclusion/add" element={<ExclusionAddPage />} />
+                  <Route path="/domainthrottles" element={<ThrottlesPage />} />
+                  <Route path="/domainthrottles/edit" element={<ThrottleEditPage />} />
+                  <Route path="/changepass" element={<ChangePasswordPage />} />
+                  <Route path="/exports" element={<ExportsPage />} />
                 </Routes>
               </AppShell>
             </ProtectedRoute>

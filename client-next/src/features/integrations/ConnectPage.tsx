@@ -115,7 +115,7 @@ export function ConnectPage() {
                 href="/api/doc"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="flex items-center gap-1 text-sm text-brand-primary hover:underline"
+                className="flex items-center gap-1 text-sm text-primary hover:underline"
               >
                 API Documentation
                 <ExternalLink className="h-3 w-3" />

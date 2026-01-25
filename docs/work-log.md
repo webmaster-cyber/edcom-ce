@@ -142,6 +142,29 @@ Extended Phase 5 with additional features based on reference designs:
 - Links to API documentation
 - Info boxes for authentication and Cloudflare notes
 
+### Suppression Lists ✅
+- Suppression lists page with search and table view
+- Create/edit suppression list with file upload/import
+- CSV import functionality via S3
+
+### Domain Throttles ✅
+- Throttles list page with route and limit display
+- Create/edit throttle with domain wildcards support
+- Activate/deactivate toggle
+
+### Settings Pages ✅
+- Change Password page with validation
+- Data Exports page with download links and auto-refresh
+
+### Suppression & Exclusion Lists Enhancements
+- Rewrote SuppressionPage to use card layout with circular count badges
+- Added tabs for switching between Suppression and Exclusion lists
+- SuppressionEditPage now handles both suppression and exclusion based on URL path
+- Added exclusion routes to App.tsx (/exclusion/new, /exclusion/edit)
+
+### Sidebar Updates
+- Added Data Exports to sidebar menu under "Integrate" section (was hidden in user menu)
+
 ### Next Steps
 - [ ] Zapier/Pabbly integrations - Need to verify if these are still supported and update URLs/OAuth flows
 - [ ] Visual form builder (drag-and-drop customization)

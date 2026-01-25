@@ -15,6 +15,7 @@ import {
   FormInput,
   Ban,
   Gauge,
+  Download,
   X,
 } from 'lucide-react'
 import { useBrand } from '../../contexts/BrandContext'
@@ -66,6 +67,12 @@ const customerNav: NavGroup[] = [
     items: [
       { label: 'API & SMTP', href: '/connect', icon: <Plug className="h-4 w-4" /> },
       { label: 'Webhooks', href: '/integrations/webhooks', icon: <Webhook className="h-4 w-4" /> },
+    ],
+  },
+  {
+    title: 'Data',
+    items: [
+      { label: 'Exports', href: '/exports', icon: <Download className="h-4 w-4" /> },
     ],
   },
 ]
