@@ -1710,7 +1710,10 @@ LIST_SCHEMA = {
             "maxLength": 1024,
             "minLength": 1,
         },
-        "used_properties": {},
+        "used_properties": {
+            "type": "array",
+            "items": {"type": "string"},
+        },
     },
     "additionalProperties": False,
 }

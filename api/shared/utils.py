@@ -605,9 +605,18 @@ def style(p: Dict[str, Any], form: bool) -> str:
     }
 
     if form:
-        s["width"] = "100%"
         if p.get("bodyType", "fixed") == "fixed":
-            s["min-width"] = "%spx" % (p.get("bodyWidth", 580),)
+            s["width"] = "%spx" % (p.get("bodyWidth", 580),)
+            s["max-width"] = "100%"
+        else:
+            s["width"] = "100%"
+        # Support card-style forms with border radius and box shadow
+        if p.get("borderRadius"):
+            s["border-radius"] = "%spx" % p["borderRadius"]
+        if p.get("boxShadow"):
+            s["box-shadow"] = p["boxShadow"]
+        if p.get("backgroundColor"):
+            s["background-color"] = p["backgroundColor"]
     else:
         if p.get("bodyType", "fixed") == "fixed":
             s["width"] = "%spx" % (p.get("bodyWidth", 580),)
@@ -1108,7 +1117,9 @@ def parts_to_html(
     s = defaultBodyStyle.copy()
     s.update(bodystyle)
 
-    if form:
+    if form and not bodystyle.get("version"):
+        # Legacy forms had no padding on the container
+        # New forms (version >= 3) use padding for card styling
         s["paddingTop"] = 0
         s["paddingLeft"] = 0
         s["paddingRight"] = 0
@@ -1144,18 +1155,32 @@ def parts_to_html(
             "input[type=text],input[type=email],input[type=number],input[type=password],input[type=tel],input[type=url] { -webkit-appearance: none; -moz-appearance: none; appearance: none; }\n"
         )
     html.write("</style>\n")
-    html.write(
-        '</head><body style="width: 100%; min-width: 100%; -webkit-text-size-adjust: 100%; -ms-text-size-adjust: 100%; margin: 0; Margin: 0; padding: 0; -moz-box-sizing: border-box; -webkit-box-sizing: border-box; box-sizing: border-box">\n'
-    )
-    html.write(
-        '<table class="body" style="border-spacing: 0; border-collapse: collapse; padding: 0; vertical-align: top; text-align: left; height: 100%; width: 100%">\n'
-    )
-    html.write(
-        '<tr style="padding: 0; vertical-align: top; text-align: left"><td class="float-center" align="center" valign="top" style="border-collapse: collapse; padding: 0; vertical-align: top; text-align: left">\n'
-    )
-    html.write(
-        f'<table style="border: 0; margin: 0; padding: 0; width: 100%; border-spacing: 0; border-collapse: collapse"><tr style="padding: 0, border-spacing: 0, border-collapse: collapse"><td {style(s, form)}>\n'
-    )
+
+    # Card-style forms (version 3+) get centered layout with margin
+    if form and bodystyle.get("version"):
+        body_bg = bodystyle.get("pageBackgroundColor", "#f3f4f6")
+        html.write(
+            f'</head><body style="width: 100%; min-width: 100%; -webkit-text-size-adjust: 100%; -ms-text-size-adjust: 100%; margin: 0; padding: 40px 16px; -moz-box-sizing: border-box; -webkit-box-sizing: border-box; box-sizing: border-box; background-color: {body_bg}">\n'
+        )
+        html.write(
+            f'<div style="max-width: {s.get("bodyWidth", 340)}px; margin: 0 auto;">\n'
+        )
+        html.write(
+            f'<div {style(s, form)}>\n'
+        )
+    else:
+        html.write(
+            '</head><body style="width: 100%; min-width: 100%; -webkit-text-size-adjust: 100%; -ms-text-size-adjust: 100%; margin: 0; Margin: 0; padding: 0; -moz-box-sizing: border-box; -webkit-box-sizing: border-box; box-sizing: border-box">\n'
+        )
+        html.write(
+            '<table class="body" style="border-spacing: 0; border-collapse: collapse; padding: 0; vertical-align: top; text-align: left; height: 100%; width: 100%">\n'
+        )
+        html.write(
+            '<tr style="padding: 0; vertical-align: top; text-align: left"><td class="float-center" align="center" valign="top" style="border-collapse: collapse; padding: 0; vertical-align: top; text-align: left">\n'
+        )
+        html.write(
+            f'<table style="border: 0; margin: 0; padding: 0; width: 100%; border-spacing: 0; border-collapse: collapse"><tr style="padding: 0, border-spacing: 0, border-collapse: collapse"><td {style(s, form)}>\n'
+        )
 
     formid = shortuuid.uuid()
 
@@ -1215,6 +1240,7 @@ def parts_to_html(
     localimgfunc = lambda m: localimgurl(m, imageroot)
 
     containerend = ""
+    is_card_form = form and bodystyle.get("version")
     if bodystyle.get("bodyType", "fixed") == "fixed" and not bodystyle.get(
         "version", ""
     ):
@@ -1384,12 +1410,18 @@ window.onload = function() {
 
     ending = "</body></html>\n"
 
+    # Card-style forms use div-based layout, others use table-based
+    if is_card_form:
+        wrapper_close = "</div></div>"
+    else:
+        wrapper_close = "</td></tr></table></td></tr></table>"
+
     return (
         (
             basehtml
             + containerend
             + formend
-            + "</td></tr></table></td></tr></table>"
+            + wrapper_close
             + pixel
             + postbody
             + ending

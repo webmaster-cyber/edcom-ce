@@ -3820,6 +3820,7 @@ app.add_route(
 app.add_route("/api/transactional/templates/{id}/test", transactional.TxnTemplateTest())
 app.add_route("/api/transactional/settings", transactional.TxnSettings())
 app.add_route("/api/testemails", campaigns.TestEmails())
+app.add_route("/api/contactactivity/{email}", campaigns.ContactActivity())
 app.add_route("/api/supportcontact", SupportContact())
 app.add_route("/api/openticket", OpenTicket())
 app.add_route("/api/customerdashboard", CustomerDashboard())

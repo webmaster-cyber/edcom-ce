@@ -3452,3 +3452,81 @@ class SavedRow(CRUDSingle):
 
         if real_id is not None:
             db[self.domain].remove(real_id)
+
+
+class ContactActivity:
+    """Get all campaign/broadcast activity for a specific contact email"""
+
+    def on_get(self, req: falcon.Request, resp: falcon.Response, email: str) -> None:
+        check_noadmin(req, True)
+
+        db = req.context["db"]
+        cid = db.get_cid()
+
+        # Normalize email
+        email = email.strip().lower()
+
+        # Optional filters
+        event_type = req.get_param("event_type", None)
+        page = int(req.get_param("page", default=1))
+
+        PAGE_SIZE = 100
+
+        # Build base query - joins camplogs with campaigns for rich data
+        base_where = "cl.email = %s AND c.cid = %s"
+        params: List[Any] = [email, cid]
+
+        if event_type:
+            base_where += " AND cl.cmd = %s"
+            params.append(event_type)
+
+        # Fetch records with campaign details
+        query_params = params + [PAGE_SIZE, PAGE_SIZE * (page - 1)]
+        records = [
+            {
+                "campaign_id": campid,
+                "campaign_name": camp_name,
+                "subject": subject,
+                "sent_at": sent_at,
+                "event_type": evt_type,
+                "timestamp": ts.isoformat() + "Z" if ts else None,
+                "code": code,
+            }
+            for campid, camp_name, subject, sent_at, evt_type, ts, code in db.execute(
+                f"""
+                SELECT
+                    cl.campid,
+                    c.data->>'name' AS campaign_name,
+                    c.data->>'subject' AS subject,
+                    c.data->>'sent_at' AS sent_at,
+                    cl.cmd AS event_type,
+                    cl.ts,
+                    cl.code
+                FROM camplogs cl
+                LEFT JOIN campaigns c ON cl.campid = c.id
+                WHERE {base_where}
+                ORDER BY cl.ts DESC
+                LIMIT %s OFFSET %s
+                """,
+                *query_params,
+            )
+        ]
+
+        # Get total count
+        total = db.single(
+            f"""
+            SELECT COUNT(*)
+            FROM camplogs cl
+            LEFT JOIN campaigns c ON cl.campid = c.id
+            WHERE {base_where}
+            """,
+            *params,
+        )
+
+        req.context["result"] = {
+            "email": email,
+            "records": records,
+            "page_size": PAGE_SIZE,
+            "total": total,
+            "page": page,
+        }

@@ -26,7 +26,12 @@ import { EmptyState } from '../../components/feedback/EmptyState'
 import { StatusBadge } from '../../components/ui/Badge'
 import { ListActionBar } from './components/ListActionBar'
 import { SubscriberCharts } from './components/SubscriberCharts'
-import type { ContactList, ContactRecord } from '../../types/contact'
+import { ListNav } from './components/ListNav'
+import type { ContactList, ContactRecord, Segment } from '../../types/contact'
+
+interface ListDetails extends ContactList {
+  used_properties?: string[]
+}
 
 type StatusTab = 'all' | 'active' | 'unsubscribed' | 'bounced' | 'complained'
 type SortField = 'name' | 'email' | 'lastactivity' | 'status'
@@ -48,9 +53,11 @@ export function ContactsFindPage() {
   const listId = searchParams.get('id') || ''
   const { user } = useAuth()
 
-  const [list, setList] = useState<ContactList | null>(null)
+  const [list, setList] = useState<ListDetails | null>(null)
   const [showCharts, setShowCharts] = useState(true)
   const [isLoading, setIsLoading] = useState(true)
+  const [segmentsCount, setSegmentsCount] = useState(0)
+  const [funnelsCount, setFunnelsCount] = useState(0)
   const [activeTab, setActiveTab] = useState<StatusTab>('all')
   const [searchQuery, setSearchQuery] = useState('')
   const [recentTags, setRecentTags] = useState<string[]>([])
@@ -106,16 +113,28 @@ export function ContactsFindPage() {
     domaincount: data.domaincount ?? 0,
   })
 
-  // Load list and tags
+  // Load list, tags, segments count, and funnels count
   useEffect(() => {
     async function load() {
       try {
-        const [listRes, tagsRes] = await Promise.all([
-          api.get<ContactList>(`/api/lists/${listId}`),
+        const [listRes, tagsRes, segmentsRes, funnelsRes] = await Promise.all([
+          api.get<ListDetails>(`/api/lists/${listId}`),
           api.get<string[]>('/api/recenttags').catch(() => ({ data: [] })),
+          api.get<Segment[]>('/api/segments').catch(() => ({ data: [] })),
+          api.get<{ id: string; lists?: string[] }[]>('/api/funnels').catch(() => ({ data: [] })),
         ])
-        setList(normalizeList(listRes.data))
+        setList(normalizeList(listRes.data) as ListDetails)
         setRecentTags(tagsRes.data)
+        // Count segments that include this list
+        const listSegments = segmentsRes.data.filter((s) => {
+          // Check if segment references this list in its rules
+          const rulesStr = JSON.stringify(s.rules || {})
+          return rulesStr.includes(listId)
+        })
+        setSegmentsCount(listSegments.length)
+        // Count funnels that target this list
+        const listFunnels = funnelsRes.data.filter((f) => f.lists?.includes(listId))
+        setFunnelsCount(listFunnels.length)
       } finally {
         setIsLoading(false)
       }
@@ -637,6 +656,17 @@ export function ContactsFindPage() {
           )}
         </div>
       </div>
+
+      {/* List Navigation */}
+      {list && (
+        <ListNav
+          listId={listId}
+          listName={list.name}
+          customFieldsCount={(list.used_properties || []).filter(f => !f.startsWith('!')).length}
+          segmentsCount={segmentsCount}
+          funnelsCount={funnelsCount}
+        />
+      )}
 
       {/* Action Bar */}
       {list && (

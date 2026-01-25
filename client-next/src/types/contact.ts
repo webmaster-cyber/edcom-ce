@@ -134,11 +134,22 @@ export interface GrowthDataPoint {
   value: number
 }
 
-// Campaign activity (for future API)
-export interface ContactCampaignActivity {
-  broadcastId: string
-  broadcastName: string
-  sentAt: string
-  opens: number
-  clicks: number
+// Campaign activity record from API
+export interface ContactActivityRecord {
+  campaign_id: string
+  campaign_name: string | null
+  subject: string | null
+  sent_at: string | null
+  event_type: 'send' | 'open' | 'click' | 'bounce' | 'complaint' | 'unsub' | 'hard' | 'soft'
+  timestamp: string | null
+  code: string | null
+}
+
+// Campaign activity API response
+export interface ContactActivityResponse {
+  email: string
+  records: ContactActivityRecord[]
+  page_size: number
+  total: number
+  page: number
 }

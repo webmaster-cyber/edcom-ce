@@ -24,13 +24,26 @@ import { ContactsFindPage } from './features/contacts/ContactsFindPage'
 import { ContactEditPage } from './features/contacts/ContactEditPage'
 import { ContactsDomainsPage } from './features/contacts/ContactsDomainsPage'
 import { ContactsTagsPage } from './features/contacts/ContactsTagsPage'
+import { ListCustomFieldsPage } from './features/contacts/ListCustomFieldsPage'
+import { ListSettingsPage } from './features/contacts/ListSettingsPage'
+import { ListSubscribeFormPage } from './features/contacts/ListSubscribeFormPage'
 import { SegmentsPage } from './features/contacts/SegmentsPage'
 import { SegmentEditorPage } from './features/contacts/SegmentEditorPage'
+import { FormsPage } from './features/forms/FormsPage'
+import { FormSettingsPage } from './features/forms/FormSettingsPage'
 import { FunnelsPage } from './features/funnels/FunnelsPage'
 import { FunnelSettingsPage } from './features/funnels/FunnelSettingsPage'
 import { FunnelMessagesPage } from './features/funnels/FunnelMessagesPage'
 import { FunnelMessageEditPage } from './features/funnels/FunnelMessageEditPage'
 import { FunnelMessageStatsPage } from './features/funnels/FunnelMessageStatsPage'
+import { TransactionalPage } from './features/transactional/TransactionalPage'
+import { TransactionalTemplatesPage } from './features/transactional/TransactionalTemplatesPage'
+import { TransactionalTemplateEditPage } from './features/transactional/TransactionalTemplateEditPage'
+import { TransactionalTagPage } from './features/transactional/TransactionalTagPage'
+import { TransactionalDomainsPage } from './features/transactional/TransactionalDomainsPage'
+import { TransactionalMessagesPage } from './features/transactional/TransactionalMessagesPage'
+import { TransactionalLogPage } from './features/transactional/TransactionalLogPage'
+import { TransactionalSettingsPage } from './features/transactional/TransactionalSettingsPage'
 import { Spinner } from './components/ui/Spinner'
 import { useEffect } from 'react'
 
@@ -117,13 +130,27 @@ export default function App() {
                   <Route path="/contacts/contact" element={<ContactEditPage />} />
                   <Route path="/contacts/domains" element={<ContactsDomainsPage />} />
                   <Route path="/contacts/tags" element={<ContactsTagsPage />} />
+                  <Route path="/contacts/fields" element={<ListCustomFieldsPage />} />
+                  <Route path="/contacts/settings" element={<ListSettingsPage />} />
+                  <Route path="/contacts/subscribe" element={<ListSubscribeFormPage />} />
                   <Route path="/segments" element={<SegmentsPage />} />
                   <Route path="/segments/edit" element={<SegmentEditorPage />} />
+                  <Route path="/forms" element={<FormsPage />} />
+                  <Route path="/forms/new" element={<FormSettingsPage />} />
+                  <Route path="/forms/settings" element={<FormSettingsPage />} />
                   <Route path="/funnels" element={<FunnelsPage />} />
                   <Route path="/funnels/settings" element={<FunnelSettingsPage />} />
                   <Route path="/funnels/messages" element={<FunnelMessagesPage />} />
                   <Route path="/funnels/message" element={<FunnelMessageEditPage />} />
                   <Route path="/funnels/message/stats" element={<FunnelMessageStatsPage />} />
+                  <Route path="/transactional" element={<TransactionalPage />} />
+                  <Route path="/transactional/templates" element={<TransactionalTemplatesPage />} />
+                  <Route path="/transactional/template" element={<TransactionalTemplateEditPage />} />
+                  <Route path="/transactional/tag" element={<TransactionalTagPage />} />
+                  <Route path="/transactional/domains" element={<TransactionalDomainsPage />} />
+                  <Route path="/transactional/messages" element={<TransactionalMessagesPage />} />
+                  <Route path="/transactional/log" element={<TransactionalLogPage />} />
+                  <Route path="/transactional/settings" element={<TransactionalSettingsPage />} />
                 </Routes>
               </AppShell>
             </ProtectedRoute>

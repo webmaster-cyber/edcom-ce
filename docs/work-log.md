@@ -99,12 +99,37 @@ Extended Phase 5 with additional features based on reference designs:
 - Added `!!lastactivity` field to segments.py (greatest of: added, last open, last click)
 - Updated lists.py `fix_row()` to include `!!lastactivity` and `!!added` in responses
 
+### Phase 6: Funnels ✅
+- Funnels list page with status indicators
+- Funnel settings page (create/edit)
+- Funnel messages page with message list
+- Funnel message edit page with template editor
+- Funnel message stats page
+
+### Phase 6b: Transactional ✅
+- Transactional overview page with tag stats
+- Templates list and edit pages
+- Tag detail page with message stats
+- Domains management page
+- Messages log with filtering
+- Settings page
+
+### Phase 7: Subscribe Forms ✅
+- Forms list page (table layout)
+- Form settings page (create/edit with tags, success messages)
+- List subscribe form page (forms filtered by list)
+- Backend form rendering with card-style layout (version 3)
+- Form preview and embed code generation
+- Mobile-responsive form design with centered card layout
+
+### Campaign Activity API ✅
+- API endpoint for contact campaign activity
+- Shows campaigns received and interactions (opens, clicks)
+
 ### Next Steps
-- [ ] Phase 6: Funnels + Transactional
-  - Funnel list/settings/messages pages
-  - Transactional templates/tags/log pages
-- [ ] Campaign Activity API for contact detail page
-- [ ] Phase 7: Forms + Integrations
+- [ ] Integrations (webhooks, Zapier)
+- [ ] Visual form builder (drag-and-drop customization)
+- [ ] Additional reporting features
 
 ---
 

@@ -99,11 +99,102 @@ Extended Phase 5 with additional features based on reference designs:
 - Added `!!lastactivity` field to segments.py (greatest of: added, last open, last click)
 - Updated lists.py `fix_row()` to include `!!lastactivity` and `!!added` in responses
 
+---
+
+## 2026-01-25 — Phase 6: Funnels ✅
+
+### Funnels Feature Complete
+Automated email sequence management for tag-based and responder triggers.
+
+**Pages Created:**
+- `FunnelsPage.tsx` - List view with search, status toggle, duplicate, delete
+- `FunnelSettingsPage.tsx` - Create/edit with type selection (tags/responders)
+- `FunnelMessagesPage.tsx` - Message sequence with timing indicators and stats
+- `FunnelMessageEditPage.tsx` - Full-width Beefree editor with tabs (Message, Settings, Tagging, Suppression)
+- `FunnelMessageStatsPage.tsx` - Analytics with domain breakdown table
+
+**Types Added:**
+- `funnel.ts` - Funnel, FunnelMessage, FunnelMessageRef, MessageDomainStats interfaces
+
+**Key Implementation Details:**
+- Tag-based funnels: contacts enter when tagged, exit when receiving exit tags
+- Responder funnels: triggered from broadcast review page or form contacts tab
+- Full-width editor on Message tab, constrained width on other tabs
+- Beefree save triggered before API calls using ref for immediate access
+- Messages stored in funnel.messages array for proper duplication support
+
+**Fixes During Implementation:**
+- Use `/api/userroutes` instead of admin-only `/api/routes`
+- Save `rawText` (not `parts`) for beefree message type
+- Load `rawText` when reopening messages for editing
+- Maintain `funnel.messages` array on add/duplicate/delete
+- Info boxes explaining trigger mechanisms for both funnel types
+
+---
+
+## 2026-01-25 — Phase 6b: Transactional Templates ✅
+
+### Transactional Feature Complete
+API-triggered transactional email management with templates, analytics, and activity logging.
+
+**Pages Created:**
+- `TransactionalPage.tsx` - Dashboard with tag stats chart, date range filter
+- `TransactionalTemplatesPage.tsx` - Template list with grid cards, search, CRUD actions
+- `TransactionalTemplateEditPage.tsx` - Template editor with Beefree/HTML toggle, test email modal
+- `TransactionalTagPage.tsx` - Tag detail view with stats cards and activity chart
+- `TransactionalDomainsPage.tsx` - Domain breakdown table for a tag
+- `TransactionalMessagesPage.tsx` - Bounce messages with hard/soft/complaint tabs
+- `TransactionalLogPage.tsx` - Activity log with pagination, filters, export
+- `TransactionalSettingsPage.tsx` - Default route and open tracking settings
+
+**Types Added:**
+- `transactional.ts` - TransactionalTemplate, TransactionalTag, TransactionalStats, TransactionalDomainStats, TransactionalBounceMessage, TransactionalLogEntry, TransactionalSettings
+
+**Key Implementation Details:**
+- Date range filters (7/30/90 days) on all analytics pages
+- Recharts BarChart for send activity visualization
+- Tabs for bounce message types (hard/soft/complaint)
+- Pagination on activity log (10 per page)
+- Export functionality for log data
+- Test email modal with JSON variable substitution
+- Beefree editor reused from funnels with `transactional` prop
+
+**Routes Added:**
+- `/transactional` - Dashboard
+- `/transactional/templates` - Template list
+- `/transactional/template?id=` - Template editor
+- `/transactional/tag?id=` - Tag detail
+- `/transactional/domains?tag=` - Domain breakdown
+- `/transactional/messages?tag=&domain=` - Bounce messages
+- `/transactional/log` - Activity log
+- `/transactional/settings` - Settings
+
+---
+
+## 2026-01-25 — Campaign Activity API ✅
+
+### API Endpoint Created
+Added `/api/contactactivity/{email}` endpoint to fetch campaign activity for a specific contact.
+
+**Backend Changes:**
+- Added `ContactActivity` class to `/api/campaigns.py`
+- Queries `camplogs` table joined with `campaigns` for rich data
+- Returns: campaign_id, campaign_name, subject, sent_at, event_type, timestamp, code
+- Supports pagination (100 records per page)
+- Optional `event_type` filter parameter
+
+**Frontend Changes:**
+- Updated `src/types/contact.ts` with `ContactActivityRecord` and `ContactActivityResponse` types
+- Updated `src/features/contacts/ContactEditPage.tsx`:
+  - Fetches activity from new API endpoint
+  - Displays activity in table with campaign name, event badge, timestamp
+  - Pagination for large activity lists
+  - Event type color-coded badges (send/open/click/bounce/etc.)
+
+**Route Added:**
+- `GET /api/contactactivity/{email}` - Returns paginated campaign activity
+
 ### Next Steps
-- [ ] Phase 6: Funnels + Transactional
-  - Funnel list/settings/messages pages
-  - Transactional templates/tags/log pages
-- [ ] Campaign Activity API for contact detail page
 - [ ] Phase 7: Forms + Integrations
 
 ---
