@@ -44,6 +44,9 @@ import { TransactionalDomainsPage } from './features/transactional/Transactional
 import { TransactionalMessagesPage } from './features/transactional/TransactionalMessagesPage'
 import { TransactionalLogPage } from './features/transactional/TransactionalLogPage'
 import { TransactionalSettingsPage } from './features/transactional/TransactionalSettingsPage'
+import { WebhooksPage } from './features/integrations/WebhooksPage'
+import { WebhookEditPage } from './features/integrations/WebhookEditPage'
+import { ConnectPage } from './features/integrations/ConnectPage'
 import { Spinner } from './components/ui/Spinner'
 import { useEffect } from 'react'
 
@@ -151,6 +154,9 @@ export default function App() {
                   <Route path="/transactional/messages" element={<TransactionalMessagesPage />} />
                   <Route path="/transactional/log" element={<TransactionalLogPage />} />
                   <Route path="/transactional/settings" element={<TransactionalSettingsPage />} />
+                  <Route path="/integrations/webhooks" element={<WebhooksPage />} />
+                  <Route path="/integrations/webhooks/edit" element={<WebhookEditPage />} />
+                  <Route path="/connect" element={<ConnectPage />} />
                 </Routes>
               </AppShell>
             </ProtectedRoute>

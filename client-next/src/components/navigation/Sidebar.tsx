@@ -65,9 +65,7 @@ const customerNav: NavGroup[] = [
     title: 'Integrate',
     items: [
       { label: 'API & SMTP', href: '/connect', icon: <Plug className="h-4 w-4" /> },
-      { label: 'Webhooks', href: '/webhooks', icon: <Webhook className="h-4 w-4" /> },
-      { label: 'Zapier', href: '/zapier', icon: <Zap className="h-4 w-4" /> },
-      { label: 'Pabbly', href: '/pabbly', icon: <Plug className="h-4 w-4" /> },
+      { label: 'Webhooks', href: '/integrations/webhooks', icon: <Webhook className="h-4 w-4" /> },
     ],
   },
 ]

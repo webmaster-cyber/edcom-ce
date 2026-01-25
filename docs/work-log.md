@@ -126,8 +126,24 @@ Extended Phase 5 with additional features based on reference designs:
 - API endpoint for contact campaign activity
 - Shows campaigns received and interactions (opens, clicks)
 
+### Integrations - Webhooks ✅
+- Webhooks list page (table layout)
+- Webhook create/edit page with name, URL, event type
+- Test webhook modal with custom payload and response display
+- Example payload preview for each event type
+- 14 event types supported (form_submit, list_add, tag_add, etc.)
+- Sidebar navigation updated
+
+### API & SMTP Connection Page ✅
+- API key display with copy button
+- Reset API key functionality with confirmation
+- SMTP relay configuration display (host, port, credentials)
+- REST API curl example with copy button
+- Links to API documentation
+- Info boxes for authentication and Cloudflare notes
+
 ### Next Steps
-- [ ] Integrations (webhooks, Zapier)
+- [ ] Zapier/Pabbly integrations - Need to verify if these are still supported and update URLs/OAuth flows
 - [ ] Visual form builder (drag-and-drop customization)
 - [ ] Additional reporting features
 
