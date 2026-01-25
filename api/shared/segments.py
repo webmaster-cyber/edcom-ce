@@ -237,7 +237,9 @@ def get_segment_rows(
             group by c.contact_id
         ),
         open_logs as (
-            select c.contact_id, array_agg(jsonb_build_array(ts, campid) order by ts) filter (where campid is not null) as open_logs
+            select c.contact_id,
+                array_agg(jsonb_build_array(ts, campid) order by ts) filter (where campid is not null) as open_logs,
+                max(ts) as max_open_ts
             from contacts."contact_open_logs_{cid}" c
             join contacts."contact_lists_{cid}" l on l.contact_id = c.contact_id
             where l.list_id = any(%s)
@@ -246,7 +248,9 @@ def get_segment_rows(
             group by c.contact_id
         ),
         click_logs as (
-            select c.contact_id, array_agg(jsonb_build_array(ts, jsonb_build_array(campid, linkindex, case when updatedts = 0 then null else updatedts end)) order by ts) filter (where campid is not null) as click_logs
+            select c.contact_id,
+                array_agg(jsonb_build_array(ts, jsonb_build_array(campid, linkindex, case when updatedts = 0 then null else updatedts end)) order by ts) filter (where campid is not null) as click_logs,
+                max(ts) as max_click_ts
             from contacts."contact_click_logs_{cid}" c
             join contacts."contact_lists_{cid}" l on l.contact_id = c.contact_id
             where l.list_id = any(%s)
@@ -262,6 +266,7 @@ def get_segment_rows(
                 '!!list', array_agg(distinct l.list_id),
                 '!!open-logs', coalesce(op.open_logs, '{{}}'),
                 '!!click-logs', coalesce(cl.click_logs, '{{}}'),
+                '!!lastactivity', jsonb_build_array(greatest(c.added, coalesce(op.max_open_ts, 0), coalesce(cl.max_click_ts, 0))),
                 '!!tags', coalesce(v.tags, '{{}}'),
                 '!!device', coalesce(v.device, '{{}}'),
                 '!!os', coalesce(v.os, '{{}}'),
@@ -279,7 +284,7 @@ def get_segment_rows(
         and ({hashlimit} = 1 or mod(c.contact_id, {hashlimit}) = %s)
         {f'and %s >= 0' if alternate_plan else f'and ({hashlimit} = 1 or mod(l.contact_id, {hashlimit}) = %s)'}
         {rowsetexpr}
-        group by c.email, c.added, c.props, op.open_logs, cl.click_logs, v.tags, v.device, v.os, v.browser, v.country, v.region, v.zip
+        group by c.email, c.added, c.props, op.open_logs, cl.click_logs, op.max_open_ts, cl.max_click_ts, v.tags, v.device, v.os, v.browser, v.country, v.region, v.zip
     """,
             listfactors,
             hashval,

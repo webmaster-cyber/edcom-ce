@@ -1,4 +1,5 @@
 import os
+import re
 import json
 import requests
 import falcon
@@ -29,6 +30,7 @@ from .shared.utils import (
     openletters,
     clickletters,
     unsubletters,
+    viewletters,
 )
 from .shared.send import unencrypt, handle_soft_event
 from .shared.crud import check_noadmin
@@ -1585,10 +1587,18 @@ class Track(object):
         else:
             clientip = ""
 
-        if not t or not c or not u:
+        if not t or not c:
             raise falcon.HTTPBadRequest(title="Missing parameter")
 
         firstt = t[0]
+        if firstt in viewletters:
+            # View in browser: serve rendered HTML with merge tag defaults
+            self._handle_view(req, resp, c)
+            return
+
+        if not u:
+            raise falcon.HTTPBadRequest(title="Missing parameter")
+
         if firstt in clickletters:
             t = "click"
         elif firstt in openletters:
@@ -1726,6 +1736,51 @@ class Track(object):
                     resp.text = UNSUB
                 else:
                     raise falcon.HTTPBadRequest(title="Invalid parameter")
+
+    def _handle_view(self, req: falcon.Request, resp: falcon.Response, campid: str) -> None:
+        """Serve the broadcast HTML with merge tags replaced by their defaults."""
+        _varre = re.compile(r"\{\{([^}]+)\}\}")
+        _defflagre = re.compile(r"\s*default\s*=(.+)")
+        _pixelre = re.compile(
+            r'<img\s[^>]*(?:height="1"[^>]*width="1"|width="1"[^>]*height="1")[^>]*/?\s*>\n?',
+            re.IGNORECASE,
+        )
+
+        with open_db() as db:
+            camp = db.campaigns.get(campid)
+            if camp is None:
+                raise falcon.HTTPNotFound(title="Broadcast not found")
+
+            viewtemplate = camp.get("viewtemplate")
+            if not viewtemplate:
+                raise falcon.HTTPNotFound(title="No viewable template for this broadcast")
+
+            try:
+                html = s3_read(os.environ["s3_databucket"], viewtemplate).decode("utf-8")
+            except Exception:
+                raise falcon.HTTPNotFound(title="Template not found")
+
+        # Remove tracking pixel
+        html = _pixelre.sub("", html)
+
+        # Replace merge tags with their default values
+        def replace_defaults(m: re.Match) -> str:  # type: ignore[type-arg]
+            tagname = m.group(1)
+            defval = ""
+            if "," in tagname:
+                tagname, flag = tagname.split(",", 1)
+                dm = _defflagre.search(flag)
+                if dm:
+                    defval = dm.group(1)
+            # System variables: remove them
+            if tagname.startswith("!!") or tagname.startswith("__"):
+                return ""
+            return defval
+
+        html = _varre.sub(replace_defaults, html)
+
+        resp.content_type = falcon.MEDIA_HTML
+        resp.text = html
 
 
 class SESWebHook(object):

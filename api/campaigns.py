@@ -478,6 +478,8 @@ def write_campaign_lists(
                                             )
 
                     p = {"sinks_pushed": True}
+                    if not demo:
+                        p["viewtemplate"] = bodykey
                     if not c:
                         p["finished_at"] = datetime.utcnow().isoformat() + "Z"
                     db.campaigns.patch(campid, p)
@@ -1403,6 +1405,7 @@ class CampaignUpdate(object):
             hashlib.md5(bodyutf8).hexdigest(),
         )
         s3_write(databucket, bodykey, bodyutf8)
+        db.campaigns.patch(id, {"viewtemplate": bodykey})
 
         fromemail = camp.get("returnpath") or camp["fromemail"]
 

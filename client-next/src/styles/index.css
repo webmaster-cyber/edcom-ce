@@ -1,0 +1,81 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --color-primary: #006FC2;
+  --color-primary-hover: #005A9E;
+  --color-accent: #FFA200;
+  --color-accent-hover: #E08F00;
+  --color-nav-bg: #006FC2;
+  --color-sidebar-bg: #1a2332;
+  --color-surface: #ffffff;
+  --color-background: #f5f6fa;
+  --color-text-primary: #2d3748;
+  --color-text-secondary: #4a5568;
+  --color-text-muted: #a0aec0;
+  --color-border: #e2e8f0;
+  --color-danger: #e53e3e;
+  --color-warning: #FFA200;
+  --color-success: #38a169;
+  --color-info: #4299e1;
+  --font-family: 'Poppins', system-ui, sans-serif;
+  --nav-height: 56px;
+  --sidebar-width: 240px;
+}
+
+@layer base {
+  body {
+    @apply bg-background text-text-primary font-sans m-0;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  *,
+  *::before,
+  *::after {
+    @apply border-border;
+  }
+}
+
+@layer components {
+  .btn {
+    @apply inline-flex items-center justify-center gap-2 rounded-md px-4 py-2 text-sm font-medium
+           transition-colors focus:outline-none focus:ring-2 focus:ring-offset-2
+           disabled:opacity-50 disabled:pointer-events-none;
+    --tw-ring-color: color-mix(in srgb, var(--color-primary) 50%, transparent);
+  }
+
+  .btn-primary {
+    @apply btn bg-primary text-white hover:bg-primary-hover;
+  }
+
+  .btn-secondary {
+    @apply btn bg-gray-100 text-text-primary hover:bg-gray-200;
+  }
+
+  .btn-danger {
+    @apply btn bg-danger text-white hover:bg-red-700;
+  }
+
+  .btn-ghost {
+    @apply btn bg-transparent hover:bg-gray-100;
+  }
+
+  .input {
+    @apply w-full rounded-md border border-border px-3 py-2 text-sm
+           placeholder:text-text-muted
+           focus:outline-none focus:ring-2 focus:border-primary
+           disabled:opacity-50 disabled:cursor-not-allowed;
+    background-color: #f8fafc;
+    --tw-ring-color: color-mix(in srgb, var(--color-primary) 50%, transparent);
+  }
+
+  .input:focus {
+    background-color: #ffffff;
+  }
+
+  .card {
+    @apply bg-surface rounded-lg border border-border shadow-sm;
+  }
+}

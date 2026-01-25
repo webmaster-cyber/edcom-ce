@@ -809,6 +809,7 @@ def parse_balanced_vars(s: str) -> str:
 clickletters = ["a", "c", "f", "g", "m", "p", "q", "s", "w"]
 openletters = ["b", "k", "j", "l", "o", "t", "y", "n"]
 unsubletters = ["d", "e", "h", "i", "r", "u", "v"]
+viewletters = ["x", "z"]
 
 
 class RandomWords(RandomWordDB):  # type: ignore

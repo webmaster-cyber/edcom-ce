@@ -1450,10 +1450,20 @@ def do_list_find(
         for prop in r.keys():
             if not prop.startswith("!"):
                 fixedrow[prop] = r.get(prop, ("",))[0]
-            if prop == "!!tags":
+            elif prop == "!!tags":
                 tagval = ",".join(sorted(r.get("!!tags", ())))
                 if tagval:
                     fixedrow[prop] = tagval
+            elif prop == "!!lastactivity":
+                # Include last activity timestamp
+                val = r.get(prop, (0,))
+                if val and val[0]:
+                    fixedrow[prop] = val[0]
+            elif prop == "!!added":
+                # Include added timestamp
+                val = r.get(prop, (0,))
+                if val and val[0]:
+                    fixedrow[prop] = val[0]
         return fixedrow
 
     cache = Cache()

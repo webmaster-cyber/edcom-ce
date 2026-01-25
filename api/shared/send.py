@@ -2707,6 +2707,7 @@ def get_vars(texts: Tuple[str, str]) -> Dict[str, Tuple[str, str]]:
                 "!!campid",
                 "!!trackingid",
                 "!!uid",
+                "!!viewinbrowser",
             ):
                 continue
             if var not in othervars:
@@ -2756,6 +2757,8 @@ def ses_send(
             return linkwebroot
         if tagname == "!!campid":
             return campid
+        if tagname == "!!viewinbrowser":
+            return "%s/l?t=x&c=%s" % (linkwebroot, campid)
 
         for realname, vals in othervars.items():
             var, d = vals
@@ -2843,6 +2846,8 @@ def sparkpost_send(
             return linkwebroot
         if tagname == "!!campid":
             return campid
+        if tagname == "!!viewinbrowser":
+            return "%s/l?t=x&c=%s" % (linkwebroot, campid)
 
         for realname, vals in othervars.items():
             var, d = vals
@@ -2928,6 +2933,8 @@ def smtprelay_send(
             return linkwebroot
         if tagname == "!!campid":
             return campid
+        if tagname == "!!viewinbrowser":
+            return "%s/l?t=x&c=%s" % (linkwebroot, campid)
 
         for realname, vals in othervars.items():
             var, d = vals
@@ -3015,6 +3022,8 @@ def easylink_send(
             return linkwebroot
         if tagname == "!!campid":
             return campid
+        if tagname == "!!viewinbrowser":
+            return "%s/l?t=x&c=%s" % (linkwebroot, campid)
 
         for realname, vals in othervars.items():
             var, d = vals
@@ -3117,6 +3126,8 @@ def mailgun_send(
             return linkwebroot
         if tagname == "!!campid":
             return campid
+        if tagname == "!!viewinbrowser":
+            return "%s/l?t=x&c=%s" % (linkwebroot, campid)
 
         for realname, vals in othervars.items():
             var, d = vals
