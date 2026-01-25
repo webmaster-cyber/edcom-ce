@@ -26,6 +26,11 @@ import { ContactsDomainsPage } from './features/contacts/ContactsDomainsPage'
 import { ContactsTagsPage } from './features/contacts/ContactsTagsPage'
 import { SegmentsPage } from './features/contacts/SegmentsPage'
 import { SegmentEditorPage } from './features/contacts/SegmentEditorPage'
+import { FunnelsPage } from './features/funnels/FunnelsPage'
+import { FunnelSettingsPage } from './features/funnels/FunnelSettingsPage'
+import { FunnelMessagesPage } from './features/funnels/FunnelMessagesPage'
+import { FunnelMessageEditPage } from './features/funnels/FunnelMessageEditPage'
+import { FunnelMessageStatsPage } from './features/funnels/FunnelMessageStatsPage'
 import { Spinner } from './components/ui/Spinner'
 import { useEffect } from 'react'
 
@@ -114,6 +119,11 @@ export default function App() {
                   <Route path="/contacts/tags" element={<ContactsTagsPage />} />
                   <Route path="/segments" element={<SegmentsPage />} />
                   <Route path="/segments/edit" element={<SegmentEditorPage />} />
+                  <Route path="/funnels" element={<FunnelsPage />} />
+                  <Route path="/funnels/settings" element={<FunnelSettingsPage />} />
+                  <Route path="/funnels/messages" element={<FunnelMessagesPage />} />
+                  <Route path="/funnels/message" element={<FunnelMessageEditPage />} />
+                  <Route path="/funnels/message/stats" element={<FunnelMessageStatsPage />} />
                 </Routes>
               </AppShell>
             </ProtectedRoute>
