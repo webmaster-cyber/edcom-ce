@@ -54,6 +54,13 @@ import { ThrottlesPage } from './features/throttles/ThrottlesPage'
 import { ThrottleEditPage } from './features/throttles/ThrottleEditPage'
 import { ChangePasswordPage } from './features/settings/ChangePasswordPage'
 import { ExportsPage } from './features/settings/ExportsPage'
+import { CustomersPage } from './features/admin/CustomersPage'
+import { CustomerEditPage } from './features/admin/CustomerEditPage'
+import { CustomerUsersPage } from './features/admin/CustomerUsersPage'
+import { CustomerListApprovalPage } from './features/admin/CustomerListApprovalPage'
+import { UserEditPage } from './features/admin/UserEditPage'
+import { FrontendsPage } from './features/admin/FrontendsPage'
+import { FrontendEditPage } from './features/admin/FrontendEditPage'
 import { Spinner } from './components/ui/Spinner'
 import { useEffect } from 'react'
 
@@ -172,6 +179,14 @@ export default function App() {
                   <Route path="/domainthrottles/edit" element={<ThrottleEditPage />} />
                   <Route path="/changepass" element={<ChangePasswordPage />} />
                   <Route path="/exports" element={<ExportsPage />} />
+                  {/* Admin routes */}
+                  <Route path="/admin/customers" element={<CustomersPage />} />
+                  <Route path="/admin/customers/edit" element={<CustomerEditPage />} />
+                  <Route path="/admin/customers/users" element={<CustomerUsersPage />} />
+                  <Route path="/admin/customers/approval" element={<CustomerListApprovalPage />} />
+                  <Route path="/admin/users/edit" element={<UserEditPage />} />
+                  <Route path="/admin/frontends" element={<FrontendsPage />} />
+                  <Route path="/admin/frontends/edit" element={<FrontendEditPage />} />
                 </Routes>
               </AppShell>
             </ProtectedRoute>

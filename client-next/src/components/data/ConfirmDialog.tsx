@@ -9,7 +9,9 @@ interface ConfirmDialogProps {
   message: string
   confirmLabel?: string
   confirmVariant?: 'primary' | 'danger'
+  variant?: 'default' | 'danger' // alias for confirmVariant
   loading?: boolean
+  children?: React.ReactNode
 }
 
 export function ConfirmDialog({
@@ -19,17 +21,22 @@ export function ConfirmDialog({
   title,
   message,
   confirmLabel = 'Confirm',
-  confirmVariant = 'danger',
+  confirmVariant,
+  variant,
   loading = false,
+  children,
 }: ConfirmDialogProps) {
+  const buttonVariant = confirmVariant || (variant === 'danger' ? 'danger' : 'primary')
+
   return (
     <Modal open={open} onClose={onClose} title={title} size="sm">
-      <p className="mb-4 text-sm text-text-secondary">{message}</p>
-      <div className="flex justify-end gap-2">
+      <p className="text-sm text-text-secondary">{message}</p>
+      {children}
+      <div className="mt-4 flex justify-end gap-2">
         <Button variant="secondary" onClick={onClose} disabled={loading}>
           Cancel
         </Button>
-        <Button variant={confirmVariant} onClick={onConfirm} loading={loading}>
+        <Button variant={buttonVariant} onClick={onConfirm} loading={loading}>
           {confirmLabel}
         </Button>
       </div>

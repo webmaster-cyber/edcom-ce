@@ -12,6 +12,7 @@ interface AuthContextValue {
   login: (uid: string, cookie: string) => void
   logout: () => void
   startImpersonation: (id: string) => void
+  startImpersonationInNewTab: (id: string) => void
   clearImpersonation: () => void
   reloadUser: () => Promise<void>
 }
@@ -25,6 +26,20 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [state, setState] = useState<AuthState>(() => {
     const uid = localStorage.getItem('uid') || ''
     const cookie = localStorage.getItem('cookieid') || ''
+
+    // Check for impersonate parameter in URL (for new tab impersonation)
+    const urlParams = new URLSearchParams(window.location.search)
+    const impersonateParam = urlParams.get('impersonate')
+    if (impersonateParam) {
+      sessionStorage.setItem('impersonateid', impersonateParam)
+      // Clean up URL
+      urlParams.delete('impersonate')
+      const newUrl = urlParams.toString()
+        ? `${window.location.pathname}?${urlParams.toString()}`
+        : window.location.pathname
+      window.history.replaceState({}, '', newUrl)
+    }
+
     const impersonate = sessionStorage.getItem('impersonateid') || ''
     return { uid, cookie, impersonate, user: null, isLoading: !!uid }
   })
@@ -93,6 +108,11 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     setState((prev) => ({ ...prev, impersonate: id, user: null, isLoading: true }))
   }, [])
 
+  const startImpersonationInNewTab = useCallback((id: string) => {
+    // Open new tab with impersonate parameter - that tab will set up its own sessionStorage
+    window.open(`/?impersonate=${id}`, '_blank')
+  }, [])
+
   const clearImpersonation = useCallback(() => {
     sessionStorage.removeItem('impersonateid')
     setState((prev) => ({ ...prev, impersonate: '', user: null, isLoading: true }))
@@ -105,6 +125,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         login,
         logout,
         startImpersonation,
+        startImpersonationInNewTab,
         clearImpersonation,
         reloadUser,
       }}

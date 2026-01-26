@@ -87,36 +87,36 @@ const adminNav: NavGroup[] = [
   {
     title: 'Customers',
     items: [
-      { label: 'Customer Accounts', href: '/customers', icon: <Users className="h-4 w-4" /> },
-      { label: 'Postal Routes', href: '/routes', icon: <Route className="h-4 w-4" /> },
-      { label: 'Sign-up Page', href: '/signupsettings', icon: <FormInput className="h-4 w-4" /> },
+      { label: 'Customer Accounts', href: '/admin/customers', icon: <Users className="h-4 w-4" /> },
+      { label: 'Postal Routes', href: '/admin/routes', icon: <Route className="h-4 w-4" /> },
+      { label: 'Sign-up Page', href: '/admin/signup', icon: <FormInput className="h-4 w-4" /> },
     ],
   },
   {
     title: 'MTA',
     items: [
-      { label: 'Servers', href: '/servers', icon: <Server className="h-4 w-4" /> },
-      { label: 'Delivery Policies', href: '/policies', icon: <Shield className="h-4 w-4" /> },
-      { label: 'IP Warmups', href: '/warmups', icon: <BarChart3 className="h-4 w-4" /> },
+      { label: 'Servers', href: '/admin/servers', icon: <Server className="h-4 w-4" /> },
+      { label: 'Delivery Policies', href: '/admin/policies', icon: <Shield className="h-4 w-4" /> },
+      { label: 'IP Warmups', href: '/admin/warmups', icon: <BarChart3 className="h-4 w-4" /> },
     ],
   },
   {
     title: 'Connect',
     items: [
-      { label: 'SMTP Relay', href: '/smtprelays', icon: <Plug className="h-4 w-4" /> },
-      { label: 'Mailgun API', href: '/mailgun', icon: <Plug className="h-4 w-4" /> },
-      { label: 'Amazon SES', href: '/ses', icon: <Plug className="h-4 w-4" /> },
-      { label: 'SparkPost', href: '/sparkpost', icon: <Plug className="h-4 w-4" /> },
-      { label: 'Easylink', href: '/easylink', icon: <Plug className="h-4 w-4" /> },
+      { label: 'SMTP Relay', href: '/admin/smtprelays', icon: <Plug className="h-4 w-4" /> },
+      { label: 'Mailgun API', href: '/admin/mailgun', icon: <Plug className="h-4 w-4" /> },
+      { label: 'Amazon SES', href: '/admin/ses', icon: <Plug className="h-4 w-4" /> },
+      { label: 'SparkPost', href: '/admin/sparkpost', icon: <Plug className="h-4 w-4" /> },
+      { label: 'Easylink', href: '/admin/easylink', icon: <Plug className="h-4 w-4" /> },
     ],
   },
   {
     title: 'Reports',
     items: [
-      { label: 'Customer Broadcasts', href: '/custbcs', icon: <BarChart3 className="h-4 w-4" /> },
-      { label: 'Email Delivery', href: '/emaildelivery', icon: <Mail className="h-4 w-4" /> },
-      { label: 'IP Delivery', href: '/ipdelivery', icon: <Server className="h-4 w-4" /> },
-      { label: 'Postmaster Activity', href: '/adminlog', icon: <FileText className="h-4 w-4" /> },
+      { label: 'Customer Broadcasts', href: '/admin/custbcs', icon: <BarChart3 className="h-4 w-4" /> },
+      { label: 'Email Delivery', href: '/admin/emaildelivery', icon: <Mail className="h-4 w-4" /> },
+      { label: 'IP Delivery', href: '/admin/ipdelivery', icon: <Server className="h-4 w-4" /> },
+      { label: 'Postmaster Activity', href: '/admin/log', icon: <FileText className="h-4 w-4" /> },
     ],
   },
 ]

@@ -164,16 +164,55 @@ Extended Phase 5 with additional features based on reference designs:
 
 ---
 
+## 2026-01-26 — Phase 8: Admin Backend (In Progress)
+
+### Customers Management ✅
+- `CustomersPage.tsx` - List customers with filtering (all, banned, waiting approval, free trial, ended, paid, paused, probation)
+- `CustomerEditPage.tsx` - Create/edit customer settings (name, frontend, routes, send limits, trial expiration, credits)
+- `CustomerUsersPage.tsx` - Manage users for a customer (list, create, edit, delete, reset API key, password reset)
+- `CustomerListApprovalPage.tsx` - Approve pending contact lists with validation results
+- `UserEditPage.tsx` - Create/edit user accounts with password strength validation
+- Bulk actions: approve, ban, unban, pause, unpause, purge queues (BC/funnel/trans), delete
+- Action bar on all customer tabs (Settings, Users, List Approval) for consistent UX
+- Impersonation opens in new tab (sessionStorage per-tab isolation)
+- Password strength validation with visual indicator and generator
+- Admin types defined in `src/types/admin.ts`
+
+### Frontend Configuration ✅
+- `FrontendsPage.tsx` - List frontend configurations with approval/trial status
+- `FrontendEditPage.tsx` - Create/edit frontend with 6 tabbed sections:
+  - Profile (name, brand image, favicon, use on login)
+  - Custom CSS (custom stylesheet rules)
+  - Alert Thresholds (global bounce/complaint rates, per-domain settings up to 5)
+  - Send Limits (approval required, trial settings, default limits, auto-pause thresholds)
+  - Header Template (custom email headers with variables, encoding options)
+  - Email Settings (password reset/signup email from name/email, API connection)
+- Routes: `/admin/frontends`, `/admin/frontends/edit`
+
+### New Shared Components
+- `Checkbox.tsx` - Checkbox with label and description
+- `DataTable.tsx` - Generic sortable data table with selection support
+- Updated `Input.tsx` - Added multiline/textarea support
+- Updated `Tabs.tsx` - Added onClick and onChange support for navigation/state tabs
+- Updated `ConfirmDialog.tsx` - Added children prop and variant alias
+
+### Admin Sidebar Navigation
+- Updated all admin routes to use `/admin/` prefix
+- Customer Accounts → `/admin/customers`
+- Advanced Config button → `/admin/frontends`
+
+---
+
 ## Remaining Migration Phases
 
-### Phase 8: Admin Backend 🔲
-- [ ] Customers management (list, create, edit, impersonate)
+### Phase 8: Admin Backend 🔲 (In Progress)
+- [x] Customers management (list, create, edit, impersonate)
+- [x] Frontend configuration
 - [ ] Servers management
 - [ ] Delivery Policies
 - [ ] Postal Routes
 - [ ] Connections (SMTP Relay, Mailgun, SES, SparkPost, Easylink)
 - [ ] Reports (Customer Broadcasts, Email Delivery, IP Delivery, Admin Log)
-- [ ] Frontend/template management
 - [ ] Sign-up page settings
 
 ### Phase 9: Multi-Brand Polish 🔲
