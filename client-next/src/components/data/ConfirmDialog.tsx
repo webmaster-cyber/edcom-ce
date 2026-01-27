@@ -6,7 +6,7 @@ interface ConfirmDialogProps {
   onClose: () => void
   onConfirm: () => void
   title: string
-  message: string
+  message?: string
   confirmLabel?: string
   confirmVariant?: 'primary' | 'danger'
   variant?: 'default' | 'danger' // alias for confirmVariant

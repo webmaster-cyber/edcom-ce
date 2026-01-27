@@ -103,16 +103,14 @@ export function FrontendEditPage() {
     setIsLoading(true)
     try {
       // Load API connections for the email settings dropdown
-      const [mailgunRes, sesRes, sparkpostRes] = await Promise.all([
+      const [mailgunRes, sesRes] = await Promise.all([
         api.get<ApiConnection[]>('/api/mailgun').catch(() => ({ data: [] })),
         api.get<ApiConnection[]>('/api/ses').catch(() => ({ data: [] })),
-        api.get<ApiConnection[]>('/api/sparkpost').catch(() => ({ data: [] })),
       ])
 
       const connections: ApiConnection[] = [
         ...mailgunRes.data.map((c) => ({ ...c, type: 'mailgun' as const })),
         ...sesRes.data.map((c) => ({ ...c, type: 'ses' as const })),
-        ...sparkpostRes.data.map((c) => ({ ...c, type: 'sparkpost' as const })),
       ]
       setApiConnections(connections)
 
@@ -702,24 +700,28 @@ export function FrontendEditPage() {
                 placeholder="noreply@example.com"
               />
 
-              <Select
-                label="API Connection"
-                value={formData.txnaccount}
-                onChange={(e) => handleChange('txnaccount', e.target.value)}
-                options={[
-                  { value: '', label: 'Select an API connection...' },
-                  ...apiConnections.map((c) => ({
-                    value: c.id,
-                    label: `${c.name} (${c.type})`,
-                  })),
-                ]}
-                hint="Select the email service to use for sending system emails"
-              />
+              <div>
+                <Select
+                  label="API Connection"
+                  value={formData.txnaccount}
+                  onChange={(e) => handleChange('txnaccount', e.target.value)}
+                  options={[
+                    { value: '', label: 'Select an API connection...' },
+                    ...apiConnections.map((c) => ({
+                      value: c.id,
+                      label: `${c.name} (${c.type})`,
+                    })),
+                  ]}
+                />
+                <p className="mt-1 text-xs text-text-muted">
+                  Select the email service to use for sending system emails
+                </p>
+              </div>
 
               {apiConnections.length === 0 && (
                 <div className="rounded-lg border border-warning/30 bg-warning/10 p-4 text-sm text-warning">
-                  No API connections configured. You'll need to set up a Mailgun, SES, or
-                  SparkPost connection to send password reset and signup emails.
+                  No API connections configured. You'll need to set up a Mailgun or SES
+                  connection to send password reset and signup emails.
                 </div>
               )}
             </div>

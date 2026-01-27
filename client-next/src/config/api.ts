@@ -13,7 +13,11 @@ export function configureInterceptors(
     if (uid && cookie && config.url?.startsWith('/api') && config.url !== '/api/login') {
       config.headers['X-Auth-UID'] = uid
       config.headers['X-Auth-Cookie'] = cookie
-      if (impersonate) {
+      // Don't send impersonate header for admin-level endpoints
+      // These endpoints need admin context, not impersonated customer context
+      const adminEndpoints = ['/api/sinks', '/api/dkimentries', '/api/companies', '/api/frontends', '/api/policies', '/api/routes', '/api/domaingroups', '/api/routepolicies', '/api/mailgun', '/api/ses', '/api/smtprelays', '/api/userlogs', '/api/allstats', '/api/ipstats', '/api/companybroadcasts', '/api/warmups']
+      const isAdminEndpoint = adminEndpoints.some(ep => config.url?.startsWith(ep))
+      if (impersonate && !isAdminEndpoint) {
         config.headers['X-Auth-Impersonate'] = impersonate
       }
     }

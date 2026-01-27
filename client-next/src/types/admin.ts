@@ -49,12 +49,37 @@ export interface CustomerCredits {
   expire: number
 }
 
+export interface RouteSplit {
+  policy: string
+  pct: number
+}
+
+export interface RouteRule {
+  id: string
+  default: boolean
+  domaingroup: string
+  splits: RouteSplit[]
+}
+
 export interface PostalRoute {
   id: string
   name: string
   dirty: boolean
   published: object | null
   usedefault?: boolean
+  modified?: string
+  rules: RouteRule[]
+}
+
+export interface DomainGroup {
+  id: string
+  name: string
+  domains: string
+}
+
+export interface RoutePolicy {
+  id: string
+  name: string
 }
 
 export interface Frontend {
@@ -98,7 +123,30 @@ export interface Frontend {
 export interface ApiConnection {
   id: string
   name: string
-  type: 'mailgun' | 'ses' | 'sparkpost'
+  type: 'mailgun' | 'ses' | 'smtprelay'
+}
+
+export interface ServerIPData {
+  ip: string
+  domain: string
+  linkdomain: string
+}
+
+export interface Server {
+  id: string
+  name: string
+  url: string
+  accesskey: string
+  ipdata: ServerIPData[]
+}
+
+export interface DKIMEntry {
+  txtvalue: string
+}
+
+export interface DKIMConfig {
+  selector: string
+  entries: Record<string, DKIMEntry>
 }
 
 export interface CustomerUser {
@@ -169,3 +217,123 @@ export const CUSTOMER_FILTER_OPTIONS: { value: CustomerFilter; label: string }[]
   { value: 'paused', label: 'Paused' },
   { value: 'probation', label: 'Probation' },
 ]
+
+// Delivery Policy types
+export interface CustomNumConn {
+  mx: string
+  val: number
+}
+
+export interface CustomWait {
+  msg: string
+  val: number
+  valtype: 'mins' | 'hours'
+  type?: 'transient'
+}
+
+export interface PolicySinkIPSettings {
+  selected: boolean
+  minnum: number
+  minpct: number
+  sendcap: number | null
+  sendrate: number | null
+}
+
+export interface PolicySink {
+  sink: string
+  allips: boolean
+  pct: number
+  sendcap: number | string
+  sendrate: number | string
+  captime: string
+  algorithm?: string
+  iplist?: Record<string, PolicySinkIPSettings>
+}
+
+export interface DeliveryPolicy {
+  id: string
+  name: string
+  modified: string
+  dirty: boolean
+  published: object | null
+  // Domain Configuration
+  domains: string
+  domaincount?: number
+  // Connection & Retry Settings
+  numconns: number
+  retryfor: number
+  sendsperconn: number
+  connerrwait: number
+  connerrwaittype: 'mins' | 'hours'
+  customnumconns: CustomNumConn[]
+  // Deferral Handling
+  deferwait: number
+  deferwaittype: 'mins' | 'hours'
+  customwait: CustomWait[]
+  ratedefer: boolean
+  ratedefercheckmins: number
+  ratedefertarget: number
+  ratedeferwait: number
+  ratedeferwaittype: 'mins' | 'hours'
+  // Server Configuration
+  sinks: PolicySink[]
+}
+
+// Connection types
+export interface MailgunConnection {
+  id: string
+  name: string
+  apikey: string
+  domain: string
+  region: 'us' | 'eu'
+  linkdomain?: string
+  domaintarget?: boolean
+}
+
+export interface SESConnection {
+  id: string
+  name: string
+  region: string
+  access: string
+  secret: string
+  domain: string
+  linkdomain?: string
+}
+
+export interface Warmup {
+  id: string
+  name: string
+  sink: string
+  sinkname?: string
+  ips: string
+  excludeips?: string
+  domains: string
+  excludedomains?: string
+  priority: 'low' | 'med' | 'high'
+  dailylimit: number
+  limitcount: number
+  rampfactor: number
+  threshold: number
+  thresholddays: number
+  dayoverrides?: Record<string, number>
+  afterlimit: 'warmup' | 'policy'
+  disabled: boolean
+  dirty: boolean
+  published: object | null
+  allips?: string[]
+}
+
+export interface SMTPRelayConnection {
+  id: string
+  name: string
+  hostname: string
+  ehlohostname: string
+  useauth?: boolean
+  username?: string
+  password?: string
+  ssltype: 'none' | 'ssl' | 'starttls'
+  port: number
+  msgsperconn?: number
+  headers?: string
+  linkdomain?: string
+}

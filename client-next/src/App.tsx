@@ -61,6 +61,24 @@ import { CustomerListApprovalPage } from './features/admin/CustomerListApprovalP
 import { UserEditPage } from './features/admin/UserEditPage'
 import { FrontendsPage } from './features/admin/FrontendsPage'
 import { FrontendEditPage } from './features/admin/FrontendEditPage'
+import { ServersPage } from './features/admin/ServersPage'
+import { ServerEditPage } from './features/admin/ServerEditPage'
+import { PoliciesPage } from './features/admin/PoliciesPage'
+import { PolicyEditPage } from './features/admin/PolicyEditPage'
+import { RoutesPage } from './features/admin/RoutesPage'
+import { RouteEditPage } from './features/admin/RouteEditPage'
+import { MailgunPage } from './features/admin/MailgunPage'
+import { MailgunEditPage } from './features/admin/MailgunEditPage'
+import { SESPage } from './features/admin/SESPage'
+import { SESEditPage } from './features/admin/SESEditPage'
+import { SMTPRelaysPage } from './features/admin/SMTPRelaysPage'
+import { SMTPRelayEditPage } from './features/admin/SMTPRelayEditPage'
+import { AdminLogPage } from './features/admin/AdminLogPage'
+import { EmailDeliveryPage } from './features/admin/EmailDeliveryPage'
+import { IPDeliveryPage } from './features/admin/IPDeliveryPage'
+import { CustomerBroadcastsPage } from './features/admin/CustomerBroadcastsPage'
+import { WarmupsPage } from './features/admin/WarmupsPage'
+import { WarmupEditPage } from './features/admin/WarmupEditPage'
 import { Spinner } from './components/ui/Spinner'
 import { useEffect } from 'react'
 
@@ -187,6 +205,24 @@ export default function App() {
                   <Route path="/admin/users/edit" element={<UserEditPage />} />
                   <Route path="/admin/frontends" element={<FrontendsPage />} />
                   <Route path="/admin/frontends/edit" element={<FrontendEditPage />} />
+                  <Route path="/admin/servers" element={<ServersPage />} />
+                  <Route path="/admin/servers/edit" element={<ServerEditPage />} />
+                  <Route path="/admin/policies" element={<PoliciesPage />} />
+                  <Route path="/admin/policies/edit" element={<PolicyEditPage />} />
+                  <Route path="/admin/routes" element={<RoutesPage />} />
+                  <Route path="/admin/routes/edit" element={<RouteEditPage />} />
+                  <Route path="/admin/mailgun" element={<MailgunPage />} />
+                  <Route path="/admin/mailgun/edit" element={<MailgunEditPage />} />
+                  <Route path="/admin/ses" element={<SESPage />} />
+                  <Route path="/admin/ses/edit" element={<SESEditPage />} />
+                  <Route path="/admin/smtprelays" element={<SMTPRelaysPage />} />
+                  <Route path="/admin/smtprelays/edit" element={<SMTPRelayEditPage />} />
+                  <Route path="/admin/log" element={<AdminLogPage />} />
+                  <Route path="/admin/emaildelivery" element={<EmailDeliveryPage />} />
+                  <Route path="/admin/ipdelivery" element={<IPDeliveryPage />} />
+                  <Route path="/admin/custbcs" element={<CustomerBroadcastsPage />} />
+                  <Route path="/admin/warmups" element={<WarmupsPage />} />
+                  <Route path="/admin/warmups/edit" element={<WarmupEditPage />} />
                 </Routes>
               </AppShell>
             </ProtectedRoute>

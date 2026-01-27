@@ -1,7 +1,7 @@
 import { useState, useCallback, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { toast } from 'sonner'
-import { Plus, Settings, Trash2 } from 'lucide-react'
+import { Plus, Settings } from 'lucide-react'
 import api from '../../config/api'
 import { Button } from '../../components/ui/Button'
 import { LoadingOverlay } from '../../components/feedback/LoadingOverlay'

@@ -725,6 +725,23 @@ class RoutePublish(object):
         run_task(update_sinks, db.get_cid(), None)
 
 
+class RouteUnpublish(object):
+
+    def on_post(self, req: falcon.Request, resp: falcon.Response, id: str) -> None:
+        if not req.context["admin"]:
+            raise falcon.HTTPUnauthorized()
+
+        db = req.context["db"]
+        route = db.routes.get(id)
+        if not route:
+            raise falcon.HTTPForbidden()
+
+        # Clear published but keep the draft config intact
+        db.routes.patch(id, {"published": None, "dirty": True})
+
+        run_task(update_sinks, db.get_cid(), None)
+
+
 class DomainGroups(CRUDCollection):
 
     def __init__(self) -> None:

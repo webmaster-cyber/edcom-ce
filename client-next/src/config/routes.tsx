@@ -27,8 +27,6 @@ export const ROUTES = {
   SMTP_RELAYS: '/smtprelays',
   MAILGUN: '/mailgun',
   SES: '/ses',
-  SPARKPOST: '/sparkpost',
-  EASYLINK: '/easylink',
   CUST_BROADCASTS: '/custbcs',
   EMAIL_DELIVERY: '/emaildelivery',
   IP_DELIVERY: '/ipdelivery',

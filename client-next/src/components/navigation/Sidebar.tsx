@@ -106,8 +106,6 @@ const adminNav: NavGroup[] = [
       { label: 'SMTP Relay', href: '/admin/smtprelays', icon: <Plug className="h-4 w-4" /> },
       { label: 'Mailgun API', href: '/admin/mailgun', icon: <Plug className="h-4 w-4" /> },
       { label: 'Amazon SES', href: '/admin/ses', icon: <Plug className="h-4 w-4" /> },
-      { label: 'SparkPost', href: '/admin/sparkpost', icon: <Plug className="h-4 w-4" /> },
-      { label: 'Easylink', href: '/admin/easylink', icon: <Plug className="h-4 w-4" /> },
     ],
   },
   {

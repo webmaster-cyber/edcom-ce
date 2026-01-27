@@ -199,6 +199,61 @@ Added `/api/contactactivity/{email}` endpoint to fetch campaign activity for a s
 
 ---
 
+## 2026-01-27 — Phase 8: Admin Backend ✅
+
+### Admin Infrastructure Management Complete
+Full admin backend for managing servers, policies, routes, connections, warmups, and reports.
+
+**Servers Management:**
+- `ServersPage.tsx` - Server list with status indicators
+- `ServerEditPage.tsx` - Server configuration with IP/domain settings, DKIM entries
+
+**Delivery Policies:**
+- `PoliciesPage.tsx` - Policy list with publish status badges
+- `PolicyEditPage.tsx` - Full policy editor (connection settings, deferral handling, server allocation)
+- Publish/revert functionality with dirty state tracking
+
+**Postal Routes:**
+- `RoutesPage.tsx` - Route list with publish/unpublish actions
+- `RouteEditPage.tsx` - Route rules editor with domain groups and policy splits
+- Added unpublish endpoint (`/api/routes/{id}/unpublish`) for taking routes offline temporarily
+
+**Connections:**
+- `MailgunPage.tsx` / `MailgunEditPage.tsx` - Mailgun API connections
+- `SESPage.tsx` / `SESEditPage.tsx` - Amazon SES connections
+- `SMTPRelaysPage.tsx` / `SMTPRelayEditPage.tsx` - Custom SMTP relay connections
+- Removed deprecated SparkPost and Easylink integrations
+
+**IP Warmups:**
+- `WarmupsPage.tsx` - Warmup list with status badges and progress indicators
+- `WarmupEditPage.tsx` - Warmup schedule editor with preview, day overrides, server/IP selection
+
+**Reports:**
+- `AdminLogPage.tsx` - Activity log with user actions, timestamps, clickable entity links
+- `EmailDeliveryPage.tsx` - Delivery charts (daily/hourly) with date range filters using recharts
+- `IPDeliveryPage.tsx` - Per-IP delivery statistics table with sortable columns
+- `CustomerBroadcastsPage.tsx` - Cross-customer broadcast stats (By Customer / By Broadcast views)
+
+**Admin Dashboard Improvements:**
+- Service stat cards (Customers, Servers, Policies, Routes, Warmups, Connections)
+- Today's Delivery section with delivery rate percentage and breakdown
+- Server Status section with health badges
+- Recent Activity section (5 most recent actions, newest first)
+
+**Backend Changes:**
+- Added `RouteUnpublish` class to `backends.py`
+- Registered `/api/routes/{id}/unpublish` endpoint in `app.py`
+
+**Fixes:**
+- Activity log field names corrected (snake_case: user_name, pre_msg, link_msg, etc.)
+- Activity sorted newest-first on both dashboard and log page
+- Removed SparkPost/Easylink from sidebar, routes, and types
+
+**Types Added:**
+- Extended `admin.ts` with Warmup, DeliveryPolicy, MailgunConnection, SESConnection, SMTPRelayConnection interfaces
+
+---
+
 ## Production Server Reference
 - IP: `92.119.124.102`
 - Install path: `/root/edcom-install/`
