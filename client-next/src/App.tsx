@@ -125,9 +125,8 @@ function ApplyUserBrand() {
   const { applyFrontend } = useBrand()
 
   useEffect(() => {
-    if (user) {
-      applyFrontend(user.frontend || null)
-    }
+    // Apply user's frontend after login, clear it on logout
+    applyFrontend(user?.frontend || null)
   }, [user, applyFrontend])
 
   return null

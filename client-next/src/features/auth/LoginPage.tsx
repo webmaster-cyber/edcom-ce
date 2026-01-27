@@ -1,10 +1,8 @@
 import { useState, useEffect } from 'react'
 import { useNavigate, useSearchParams } from 'react-router-dom'
 import { useAuth } from '../../contexts/AuthContext'
-import { useBrand } from '../../contexts/BrandContext'
 import { Button } from '../../components/ui/Button'
 import { Input } from '../../components/ui/Input'
-import { Spinner } from '../../components/ui/Spinner'
 import api from '../../config/api'
 import type { LoginResponse } from '../../types/auth'
 
@@ -14,7 +12,6 @@ export function LoginPage() {
   const [error, setError] = useState('')
   const [loading, setLoading] = useState(false)
   const { uid, login } = useAuth()
-  const { loginFrontend, isLoading: brandLoading } = useBrand()
   const navigate = useNavigate()
   const [searchParams] = useSearchParams()
 
@@ -56,28 +53,12 @@ export function LoginPage() {
     }
   }
 
-  if (brandLoading) {
-    return (
-      <div className="flex h-screen items-center justify-center bg-background">
-        <Spinner size="lg" />
-      </div>
-    )
-  }
-
   return (
     <div className="flex min-h-screen items-center justify-center bg-background px-4">
       <div className="w-full max-w-sm">
-        {/* Logo */}
+        {/* Logo - always show SendMail branding on login */}
         <div className="mb-8 text-center">
-          {loginFrontend?.image ? (
-            <img
-              src={loginFrontend.image}
-              alt="Logo"
-              className="mx-auto h-12 max-w-[200px] object-contain"
-            />
-          ) : (
-            <img src="/logo.svg" alt="SendMail" className="mx-auto h-12 max-w-[200px] object-contain" />
-          )}
+          <img src="/logo.svg" alt="SendMail" className="mx-auto h-12 max-w-[200px] object-contain" />
         </div>
 
         {/* Login form */}

@@ -17,10 +17,16 @@ interface DomainRate {
   complaintrate: number
 }
 
+interface ThemeColors {
+  primary: string
+  primaryHover: string
+  accent: string
+  sidebarBg: string
+}
+
 interface FrontendFormData {
   name: string
   // Profile
-  useforlogin: boolean
   image: string
   favicon: string
   // Custom CSS
@@ -56,7 +62,6 @@ List-Unsubscribe-Post: List-Unsubscribe=One-Click`
 
 const DEFAULT_FORM: FrontendFormData = {
   name: '',
-  useforlogin: false,
   image: '',
   favicon: '',
   customcss: '',
@@ -87,6 +92,99 @@ const ENCODING_OPTIONS = [
   { value: 'qp', label: 'Quoted-Printable' },
 ]
 
+const DEFAULT_THEME: ThemeColors = {
+  primary: '#006FC2',
+  primaryHover: '#005A9E',
+  accent: '#FFA200',
+  sidebarBg: '#1a2332',
+}
+
+// Parse CSS variables from customcss string
+function parseThemeFromCSS(css: string): ThemeColors {
+  const theme = { ...DEFAULT_THEME }
+  const varRegex = /--color-([\w-]+)\s*:\s*([^;]+)/g
+  let match
+  while ((match = varRegex.exec(css)) !== null) {
+    const [, name, value] = match
+    const trimmedValue = value.trim()
+    switch (name) {
+      case 'primary':
+        theme.primary = trimmedValue
+        break
+      case 'primary-hover':
+        theme.primaryHover = trimmedValue
+        break
+      case 'accent':
+        theme.accent = trimmedValue
+        break
+      case 'sidebar-bg':
+        theme.sidebarBg = trimmedValue
+        break
+    }
+  }
+  return theme
+}
+
+// Generate CSS variables from theme colors
+function generateThemeCSS(theme: ThemeColors): string {
+  return `:root {
+  --color-primary: ${theme.primary};
+  --color-primary-hover: ${theme.primaryHover};
+  --color-accent: ${theme.accent};
+  --color-sidebar-bg: ${theme.sidebarBg};
+}`
+}
+
+// Extract non-theme CSS (everything that's not :root { ... } with our variables)
+function extractCustomCSS(css: string): string {
+  // Remove the :root block containing our theme variables
+  const rootRegex = /:root\s*\{[^}]*--color-(primary|primary-hover|accent|sidebar-bg)[^}]*\}/g
+  return css.replace(rootRegex, '').trim()
+}
+
+// Combine theme CSS with custom CSS
+function combineCSS(theme: ThemeColors, customCSS: string): string {
+  const themeCSS = generateThemeCSS(theme)
+  const trimmedCustom = customCSS.trim()
+  return trimmedCustom ? `${themeCSS}\n\n${trimmedCustom}` : themeCSS
+}
+
+function ColorPicker({
+  label,
+  value,
+  onChange,
+  hint,
+}: {
+  label: string
+  value: string
+  onChange: (value: string) => void
+  hint?: string
+}) {
+  return (
+    <div>
+      <label className="mb-1.5 block text-sm font-medium text-text-primary">{label}</label>
+      <div className="flex items-center gap-3">
+        <div className="relative">
+          <input
+            type="color"
+            value={value}
+            onChange={(e) => onChange(e.target.value)}
+            className="h-10 w-14 cursor-pointer rounded border border-border"
+          />
+        </div>
+        <input
+          type="text"
+          value={value}
+          onChange={(e) => onChange(e.target.value)}
+          className="w-28 rounded-md border border-border px-2 py-1.5 text-sm font-mono uppercase"
+          placeholder="#000000"
+        />
+      </div>
+      {hint && <p className="mt-1 text-xs text-text-muted">{hint}</p>}
+    </div>
+  )
+}
+
 export function FrontendEditPage() {
   const navigate = useNavigate()
   const [searchParams] = useSearchParams()
@@ -98,6 +196,8 @@ export function FrontendEditPage() {
   const [formData, setFormData] = useState<FrontendFormData>(DEFAULT_FORM)
   const [apiConnections, setApiConnections] = useState<ApiConnection[]>([])
   const [activeTab, setActiveTab] = useState('profile')
+  const [themeColors, setThemeColors] = useState<ThemeColors>(DEFAULT_THEME)
+  const [additionalCSS, setAdditionalCSS] = useState('')
 
   const reload = useCallback(async () => {
     setIsLoading(true)
@@ -116,12 +216,12 @@ export function FrontendEditPage() {
 
       if (!isNew) {
         const { data } = await api.get<Frontend>(`/api/frontends/${id}`)
+        const css = data.customcss || ''
         setFormData({
           name: data.name || '',
-          useforlogin: data.useforlogin ?? false,
           image: data.image || '',
           favicon: data.favicon || '',
-          customcss: data.customcss || '',
+          customcss: css,
           bouncerate: data.bouncerate ?? 3.0,
           complaintrate: data.complaintrate ?? 0.2,
           domainrates: data.domainrates || [],
@@ -142,6 +242,9 @@ export function FrontendEditPage() {
           inviteemail: data.inviteemail || '',
           txnaccount: data.txnaccount || '',
         })
+        // Parse theme colors from existing CSS
+        setThemeColors(parseThemeFromCSS(css))
+        setAdditionalCSS(extractCustomCSS(css))
       }
     } finally {
       setIsLoading(false)
@@ -202,12 +305,15 @@ export function FrontendEditPage() {
 
     setIsSaving(true)
     try {
+      // Combine theme colors with additional CSS
+      const combinedCSS = combineCSS(themeColors, additionalCSS)
+
       const payload = {
         ...formData,
         // Convert empty strings to null for optional fields
         image: formData.image || null,
         favicon: formData.favicon || null,
-        customcss: formData.customcss || null,
+        customcss: combinedCSS || null,
         txnaccount: formData.txnaccount || null,
       }
 
@@ -226,9 +332,13 @@ export function FrontendEditPage() {
     }
   }
 
+  const handleThemeChange = (key: keyof ThemeColors, value: string) => {
+    setThemeColors((prev) => ({ ...prev, [key]: value }))
+  }
+
   const tabs = [
     { id: 'profile', label: 'Profile' },
-    { id: 'css', label: 'Custom CSS' },
+    { id: 'theme', label: 'Theme' },
     { id: 'alerts', label: 'Alert Thresholds' },
     { id: 'limits', label: 'Send Limits' },
     { id: 'headers', label: 'Header Template' },
@@ -364,37 +474,105 @@ export function FrontendEditPage() {
                 </div>
               </div>
 
-              <Checkbox
-                label="Use Brand Image on Login Screen"
-                checked={formData.useforlogin}
-                onChange={(checked) => handleChange('useforlogin', checked)}
-              />
             </div>
           )}
 
-          {/* Custom CSS Tab */}
-          {activeTab === 'css' && (
-            <div className="space-y-4">
-              <Input
-                label="Custom CSS"
-                value={formData.customcss}
-                onChange={(e) => handleChange('customcss', e.target.value)}
-                placeholder=".my-class { color: blue; }"
-                multiline
-                rows={15}
-                hint="Add custom CSS rules to style the frontend"
-              />
-              <div className="rounded-lg bg-gray-50 p-4">
-                <p className="text-sm font-medium text-text-primary">Example CSS:</p>
-                <pre className="mt-2 text-xs text-text-muted">
-{`:root {
-  --primary-color: #3B82F6;
-  --header-bg: #1F2937;
-}
+          {/* Theme Tab */}
+          {activeTab === 'theme' && (
+            <div className="space-y-8">
+              {/* Color Pickers */}
+              <div>
+                <h3 className="mb-4 text-sm font-medium text-text-primary">Brand Colors</h3>
+                <div className="grid max-w-3xl gap-6 sm:grid-cols-2 lg:grid-cols-4">
+                  <ColorPicker
+                    label="Primary Color"
+                    value={themeColors.primary}
+                    onChange={(v) => handleThemeChange('primary', v)}
+                    hint="Buttons, links, active states"
+                  />
+                  <ColorPicker
+                    label="Primary Hover"
+                    value={themeColors.primaryHover}
+                    onChange={(v) => handleThemeChange('primaryHover', v)}
+                    hint="Hover state for primary elements"
+                  />
+                  <ColorPicker
+                    label="Accent Color"
+                    value={themeColors.accent}
+                    onChange={(v) => handleThemeChange('accent', v)}
+                    hint="Highlights and secondary actions"
+                  />
+                  <ColorPicker
+                    label="Sidebar"
+                    value={themeColors.sidebarBg}
+                    onChange={(v) => handleThemeChange('sidebarBg', v)}
+                    hint="Sidebar background color"
+                  />
+                </div>
+              </div>
 
-.login-logo {
-  max-width: 200px;
-}`}
+              {/* Live Preview */}
+              <div>
+                <h3 className="mb-4 text-sm font-medium text-text-primary">Preview</h3>
+                <div className="flex overflow-hidden rounded-lg border border-border">
+                  {/* Mini sidebar preview */}
+                  <div
+                    className="w-32 p-3"
+                    style={{ backgroundColor: themeColors.sidebarBg }}
+                  >
+                    <div className="space-y-2">
+                      <div className="h-3 w-16 rounded bg-white/20" />
+                      <div className="h-3 w-20 rounded bg-white/20" />
+                      <div className="h-3 w-14 rounded bg-white/20" />
+                    </div>
+                  </div>
+                  {/* Mini content preview */}
+                  <div className="flex-1 bg-gray-50 p-4">
+                    <div className="space-y-3">
+                      <div className="flex gap-2">
+                        <button
+                          className="rounded px-3 py-1.5 text-xs font-medium text-white"
+                          style={{ backgroundColor: themeColors.primary }}
+                        >
+                          Primary Button
+                        </button>
+                        <button
+                          className="rounded px-3 py-1.5 text-xs font-medium text-white"
+                          style={{ backgroundColor: themeColors.accent }}
+                        >
+                          Accent Button
+                        </button>
+                      </div>
+                      <p className="text-xs">
+                        <span style={{ color: themeColors.primary }}>Primary link color</span>
+                        {' · '}
+                        <span style={{ color: themeColors.accent }}>Accent link color</span>
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              {/* Additional CSS */}
+              <div>
+                <h3 className="mb-2 text-sm font-medium text-text-primary">Additional CSS</h3>
+                <p className="mb-3 text-xs text-text-muted">
+                  Add custom CSS rules beyond the color theme. These will be applied after the theme colors.
+                </p>
+                <Input
+                  value={additionalCSS}
+                  onChange={(e) => setAdditionalCSS(e.target.value)}
+                  placeholder=".custom-class { ... }"
+                  multiline
+                  rows={8}
+                />
+              </div>
+
+              {/* Generated CSS Preview */}
+              <div>
+                <h3 className="mb-2 text-sm font-medium text-text-primary">Generated CSS</h3>
+                <pre className="rounded-lg bg-gray-100 p-4 text-xs text-text-secondary overflow-x-auto">
+                  {combineCSS(themeColors, additionalCSS)}
                 </pre>
               </div>
             </div>

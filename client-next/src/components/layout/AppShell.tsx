@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { TopBar } from '../navigation/TopBar'
 import { Sidebar } from '../navigation/Sidebar'
 import { useAuth } from '../../contexts/AuthContext'
@@ -7,10 +7,23 @@ interface AppShellProps {
   children: React.ReactNode
 }
 
+const SIDEBAR_COLLAPSED_KEY = 'sidebar-collapsed'
+
 export function AppShell({ children }: AppShellProps) {
   const [sidebarOpen, setSidebarOpen] = useState(false)
+  const [sidebarCollapsed, setSidebarCollapsed] = useState(() => {
+    return localStorage.getItem(SIDEBAR_COLLAPSED_KEY) === 'true'
+  })
   const { user, impersonate } = useAuth()
   const isAdmin = !!user?.admin && !impersonate
+
+  useEffect(() => {
+    localStorage.setItem(SIDEBAR_COLLAPSED_KEY, String(sidebarCollapsed))
+  }, [sidebarCollapsed])
+
+  const toggleCollapsed = () => {
+    setSidebarCollapsed((prev) => !prev)
+  }
 
   return (
     <div className="flex h-screen overflow-hidden bg-background">
@@ -24,11 +37,17 @@ export function AppShell({ children }: AppShellProps) {
 
       {/* Sidebar */}
       <div
-        className={`fixed inset-y-0 left-0 z-40 w-[var(--sidebar-width)] transform transition-transform duration-200 lg:static lg:translate-x-0 ${
+        className={`fixed inset-y-0 left-0 z-40 transform transition-all duration-200 lg:static lg:translate-x-0 ${
           sidebarOpen ? 'translate-x-0' : '-translate-x-full'
         }`}
+        style={{ width: sidebarCollapsed ? '64px' : 'var(--sidebar-width)' }}
       >
-        <Sidebar isAdmin={isAdmin} onClose={() => setSidebarOpen(false)} />
+        <Sidebar
+          isAdmin={isAdmin}
+          collapsed={sidebarCollapsed}
+          onToggleCollapse={toggleCollapsed}
+          onClose={() => setSidebarOpen(false)}
+        />
       </div>
 
       {/* Main content */}

@@ -14,9 +14,11 @@ export default defineConfig({
         target: 'http://localhost:80',
         changeOrigin: true,
       },
-      '/l': {
+      // Link tracking endpoint - use regex to match exactly /l or /l?query
+      '^/l(\\?.*)?$': {
         target: 'http://localhost:80',
         changeOrigin: true,
+        rewrite: (path) => path,
       },
       '/signup': {
         target: 'http://localhost:80',

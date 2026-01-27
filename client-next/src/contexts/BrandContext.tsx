@@ -16,13 +16,14 @@ export function BrandProvider({ children }: { children: React.ReactNode }) {
   const [userFrontend, setUserFrontend] = useState<Frontend | null>(null)
   const [isLoading, setIsLoading] = useState(true)
 
-  // Load login frontend config on mount
+  // Load login frontend config on mount (but don't apply CSS - that only happens after login)
   useEffect(() => {
     async function loadLoginFrontend() {
       try {
         const { data } = await api.get<LoginFrontend>('/api/loginfrontend')
         setLoginFrontend(data)
-        applyBrandAssets(data.favicon, data.customcss)
+        // Only apply favicon on login page, not customcss
+        // Brand-specific styling only kicks in after user logs in
       } catch {
         // Use defaults if endpoint fails
       } finally {

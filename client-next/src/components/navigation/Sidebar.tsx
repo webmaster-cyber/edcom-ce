@@ -17,12 +17,16 @@ import {
   Gauge,
   Download,
   X,
+  ChevronLeft,
+  ChevronRight,
 } from 'lucide-react'
 import { useBrand } from '../../contexts/BrandContext'
 import { useNavigationGuardContext } from '../../contexts/NavigationGuardContext'
 
 interface SidebarProps {
   isAdmin: boolean
+  collapsed?: boolean
+  onToggleCollapse?: () => void
   onClose: () => void
 }
 
@@ -120,6 +124,11 @@ const adminNav: NavGroup[] = [
 ]
 
 function getImagePath(url: string): string {
+  // Base64 data URLs should be used as-is
+  if (url.startsWith('data:')) {
+    return url
+  }
+  // For regular URLs, extract just the pathname to go through the Vite proxy
   try {
     const parsed = new URL(url)
     return parsed.pathname
@@ -128,60 +137,122 @@ function getImagePath(url: string): string {
   }
 }
 
-export function Sidebar({ isAdmin, onClose }: SidebarProps) {
-  const { loginFrontend } = useBrand()
+export function Sidebar({ isAdmin, collapsed = false, onToggleCollapse, onClose }: SidebarProps) {
+  const { loginFrontend, userFrontend } = useBrand()
   const { guardedNavigate } = useNavigationGuardContext()
   const location = useLocation()
   const nav = isAdmin ? adminNav : customerNav
 
+  // Prefer user's assigned frontend, fall back to login frontend
+  const brandImage = userFrontend?.image || loginFrontend?.image
+
   return (
     <aside className="flex h-full flex-col bg-sidebar-bg text-white">
       {/* Brand logo area */}
-      <div className="flex h-[var(--nav-height)] items-center justify-between px-4">
-        <div className="flex items-center gap-2">
-          {loginFrontend?.image ? (
-            <img
-              src={getImagePath(loginFrontend.image)}
-              alt="Logo"
-              className="h-8 max-w-[160px] object-contain"
-              onError={(e) => { e.currentTarget.style.display = 'none' }}
-            />
-          ) : (
-            <span className="text-lg font-bold tracking-tight text-white">SendMail</span>
-          )}
-        </div>
-        <button onClick={onClose} className="rounded-md p-1 text-white/60 hover:text-white lg:hidden">
-          <X className="h-5 w-5" />
-        </button>
+      <div className={`flex h-[var(--nav-height)] items-center ${collapsed ? 'justify-center px-2' : 'justify-between px-4'}`}>
+        {!collapsed && (
+          <div className="flex items-center gap-2">
+            {brandImage ? (
+              <img
+                src={getImagePath(brandImage)}
+                alt="Logo"
+                className="h-8 max-w-[160px] object-contain"
+                onError={(e) => { e.currentTarget.style.display = 'none' }}
+              />
+            ) : (
+              <span className="text-lg font-bold tracking-tight text-white">SendMail</span>
+            )}
+          </div>
+        )}
+        {collapsed && brandImage && (
+          <img
+            src={getImagePath(brandImage)}
+            alt="Logo"
+            className="h-6 w-6 object-contain"
+            onError={(e) => { e.currentTarget.style.display = 'none' }}
+          />
+        )}
+        {collapsed && !brandImage && (
+          <span className="text-lg font-bold text-white">S</span>
+        )}
+        {!collapsed && (
+          <button onClick={onClose} className="rounded-md p-1 text-white/60 hover:text-white lg:hidden">
+            <X className="h-5 w-5" />
+          </button>
+        )}
       </div>
 
       {/* Navigation */}
-      <nav className="flex-1 overflow-y-auto px-3 py-4">
+      <nav className={`flex-1 overflow-y-auto py-4 ${collapsed ? 'px-2' : 'px-3'}`}>
         {nav.map((group) => (
           <div key={group.title} className="mb-6">
-            <p className="mb-2 px-3 text-xs font-semibold uppercase tracking-wider text-white/40">
-              {group.title}
-            </p>
+            {!collapsed && (
+              <p className="mb-2 px-3 text-xs font-semibold uppercase tracking-wider text-white/40">
+                {group.title}
+              </p>
+            )}
+            {collapsed && (
+              <div className="mb-2 border-t border-white/10 pt-2 first:border-t-0 first:pt-0" />
+            )}
             <ul className="space-y-0.5">
-              {group.items.map((item) => (
-                <li key={item.href}>
-                  <button
-                    onClick={() => guardedNavigate(item.href)}
-                    className={`flex w-full items-center gap-3 rounded-md px-3 py-2 text-left text-sm transition-colors ${
-                      (item.href === '/' ? location.pathname === '/' : location.pathname.startsWith(item.href))
-                        ? 'bg-white/10 text-white font-medium'
-                        : 'text-white/70 hover:bg-white/5 hover:text-white'
-                    }`}
-                  >
-                    {item.icon}
-                    {item.label}
-                  </button>
-                </li>
-              ))}
+              {group.items.map((item) => {
+                const isActive = item.href === '/'
+                  ? location.pathname === '/'
+                  : location.pathname.startsWith(item.href)
+
+                return (
+                  <li key={item.href}>
+                    <button
+                      onClick={() => guardedNavigate(item.href)}
+                      title={collapsed ? item.label : undefined}
+                      className={`group relative flex w-full items-center rounded-md text-left text-sm transition-colors ${
+                        collapsed
+                          ? 'justify-center p-2'
+                          : 'gap-3 px-3 py-2'
+                      } ${
+                        isActive
+                          ? 'bg-white/10 text-white font-medium'
+                          : 'text-white/70 hover:bg-white/5 hover:text-white'
+                      }`}
+                    >
+                      {item.icon}
+                      {!collapsed && item.label}
+                      {/* Tooltip for collapsed state */}
+                      {collapsed && (
+                        <span className="pointer-events-none absolute left-full ml-2 whitespace-nowrap rounded-md bg-gray-900 px-2 py-1 text-xs text-white opacity-0 shadow-lg transition-opacity group-hover:opacity-100 z-50">
+                          {item.label}
+                        </span>
+                      )}
+                    </button>
+                  </li>
+                )
+              })}
             </ul>
           </div>
         ))}
       </nav>
+
+      {/* Collapse toggle button */}
+      {onToggleCollapse && (
+        <div className={`hidden border-t border-white/10 lg:block ${collapsed ? 'p-2' : 'p-3'}`}>
+          <button
+            onClick={onToggleCollapse}
+            className={`flex w-full items-center rounded-md text-white/60 transition-colors hover:bg-white/5 hover:text-white ${
+              collapsed ? 'justify-center p-2' : 'gap-3 px-3 py-2'
+            }`}
+            title={collapsed ? 'Expand sidebar' : 'Collapse sidebar'}
+          >
+            {collapsed ? (
+              <ChevronRight className="h-4 w-4" />
+            ) : (
+              <>
+                <ChevronLeft className="h-4 w-4" />
+                <span className="text-sm">Collapse</span>
+              </>
+            )}
+          </button>
+        </div>
+      )}
     </aside>
   )
 }

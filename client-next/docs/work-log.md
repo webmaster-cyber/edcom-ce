@@ -194,8 +194,37 @@ Added `/api/contactactivity/{email}` endpoint to fetch campaign activity for a s
 **Route Added:**
 - `GET /api/contactactivity/{email}` - Returns paginated campaign activity
 
-### Next Steps
-- [ ] Phase 7: Forms + Integrations
+---
+
+## 2026-01-25 — Phase 7: Forms + Integrations ✅
+
+### Forms Feature Complete
+Subscription form builder with embed code generation.
+
+**Pages Created:**
+- `FormsPage.tsx` - Form list with search, CRUD actions
+- `FormSettingsPage.tsx` - Form editor with field configuration, styling, embed code
+
+### Integrations Feature Complete
+API/SMTP credentials and webhook management.
+
+**Pages Created:**
+- `ConnectPage.tsx` - API keys, SMTP credentials display
+- `WebhooksPage.tsx` - Webhook list with status toggle
+- `WebhookEditPage.tsx` - Webhook configuration (events, URL, headers)
+
+### Suppression Feature Complete
+Bounce and exclusion list management.
+
+**Pages Created:**
+- `SuppressionPage.tsx` - Suppression list with tabs (Bounced/Unsubscribed/Complained/Exclusions)
+- `SuppressionEditPage.tsx` - View/edit suppression entry details
+- `ExclusionAddPage.tsx` - Add emails to exclusion list
+
+### Additional Features
+- `ThrottlesPage.tsx` / `ThrottleEditPage.tsx` - Domain throttle management
+- `ChangePasswordPage.tsx` - Password change form
+- `ExportsPage.tsx` - Data export management
 
 ---
 
@@ -251,6 +280,54 @@ Full admin backend for managing servers, policies, routes, connections, warmups,
 
 **Types Added:**
 - Extended `admin.ts` with Warmup, DeliveryPolicy, MailgunConnection, SESConnection, SMTPRelayConnection interfaces
+
+---
+
+## 2026-01-27 — Phase 9: Multi-Brand Polish ✅
+
+### Theme Editor in FrontendEditPage
+Added visual theme editor with color pickers instead of requiring raw CSS knowledge.
+
+**Features:**
+- Color pickers for: Primary, Primary Hover, Accent, Sidebar (4-column grid)
+- Live preview showing sidebar and button colors
+- Additional CSS textarea for custom styles beyond theme colors
+- Generated CSS preview showing the final output
+- Theme colors stored as CSS variables in `customcss` field
+- Removed "Top Navigation" color (not used - TopBar uses bg-surface)
+- Removed "Use Brand Image on Login Screen" checkbox (login always shows SendMail)
+
+**Sidebar Logo Fix:**
+- Updated `Sidebar.tsx` to use `userFrontend?.image || loginFrontend?.image`
+- Fixed `getImagePath()` to preserve base64 data URLs (was stripping `data:` prefix)
+- Users now see their assigned frontend's logo after login
+
+**Collapsible Sidebar:**
+- Added collapse/expand toggle at bottom of sidebar (desktop only)
+- Collapsed state shows icons only with tooltips on hover
+- State persisted in localStorage
+- Smooth transition animation
+
+**Login Page Simplification:**
+- Login page always shows static `/logo.svg` (SendMail branding)
+- Removed brand-specific logo/CSS from login - branding only after login
+- Fixed CSS clearing on logout (`applyFrontend(null)` now called)
+
+**Vite Proxy Fix:**
+- Fixed `/l` proxy matching `/logo.svg` - changed to regex `^/l(\\?.*)?$`
+- Static files in `public/` now served correctly
+
+**Nginx Config Update:**
+- Updated `nginx.server.conf` to proxy to Vite dev server on port 5173
+- Added `/i/` location for image proxying
+
+**How it works:**
+1. Admin edits a Frontend and sets theme colors via color pickers
+2. Colors are saved as CSS variable overrides in the `customcss` field
+3. When user logs in, `App.tsx` calls `applyFrontend(user.frontend)`
+4. `BrandContext` injects the customcss into the page
+5. All Tailwind classes using CSS variables update automatically
+6. On logout, `applyFrontend(null)` clears the custom CSS
 
 ---
 
