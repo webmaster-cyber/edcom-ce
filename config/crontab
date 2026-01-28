@@ -6,4 +6,5 @@
 * * * * * /scripts/cron.py api.campaigns check_camps 16
 30 * * * * /scripts/cron.py api.lists refresh_active_counts 20
 * * * * * /scripts/cron.py api.lists check_list_validations 24
+0 * * * * /scripts/cron.py api.billing check_subscriptions 26
 0 0 * * * /usr/sbin/logrotate /etc/logrotate.conf -s /config/logrotate.status

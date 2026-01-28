@@ -33,6 +33,7 @@ from .shared.utils import (
     set_onboarding,
     try_decode,
     SECS_IN_DAY,
+    check_plan_limits,
 )
 from .shared.segments import (
     segment_lists,
@@ -1075,6 +1076,12 @@ class ListImport(object):
                 title="List is already importing",
                 description="Already importing data into list; try again later",
             )
+
+        try:
+            check_plan_limits(db, l["cid"], "subscriber")
+        except Exception as e:
+            raise falcon.HTTPBadRequest(title="Plan limit reached", description=str(e))
+
         db.lists.patch(id, {"processing": "Importing data", "processing_error": ""})
         try:
             contacts.add_blocks(

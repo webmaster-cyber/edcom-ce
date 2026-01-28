@@ -79,6 +79,14 @@ import { IPDeliveryPage } from './features/admin/IPDeliveryPage'
 import { CustomerBroadcastsPage } from './features/admin/CustomerBroadcastsPage'
 import { WarmupsPage } from './features/admin/WarmupsPage'
 import { WarmupEditPage } from './features/admin/WarmupEditPage'
+import { PlansPage } from './features/admin/PlansPage'
+import { PlanEditPage } from './features/admin/PlanEditPage'
+import { PaymentGatewaysPage } from './features/admin/PaymentGatewaysPage'
+import { ContactMessagesPage } from './features/admin/ContactMessagesPage'
+import { SignupPage } from './features/admin/SignupPage'
+import { BillingPage } from './features/billing/BillingPage'
+import { InvoicesPage } from './features/billing/InvoicesPage'
+import { CheckoutPage } from './features/billing/CheckoutPage'
 import { Spinner } from './components/ui/Spinner'
 import { useEffect } from 'react'
 
@@ -222,6 +230,14 @@ export default function App() {
                   <Route path="/admin/custbcs" element={<CustomerBroadcastsPage />} />
                   <Route path="/admin/warmups" element={<WarmupsPage />} />
                   <Route path="/admin/warmups/edit" element={<WarmupEditPage />} />
+                  <Route path="/admin/signup" element={<SignupPage />} />
+                  <Route path="/admin/plans" element={<PlansPage />} />
+                  <Route path="/admin/plans/edit" element={<PlanEditPage />} />
+                  <Route path="/admin/gateways" element={<PaymentGatewaysPage />} />
+                  <Route path="/admin/contact-messages" element={<ContactMessagesPage />} />
+                  <Route path="/billing" element={<BillingPage />} />
+                  <Route path="/billing/invoices" element={<InvoicesPage />} />
+                  <Route path="/billing/checkout" element={<CheckoutPage />} />
                 </Routes>
               </AppShell>
             </ProtectedRoute>

@@ -19,6 +19,9 @@ import {
   X,
   ChevronLeft,
   ChevronRight,
+  CreditCard,
+  Receipt,
+  MessageSquare,
 } from 'lucide-react'
 import { useBrand } from '../../contexts/BrandContext'
 import { useNavigationGuardContext } from '../../contexts/NavigationGuardContext'
@@ -74,6 +77,13 @@ const customerNav: NavGroup[] = [
     ],
   },
   {
+    title: 'Account',
+    items: [
+      { label: 'Billing', href: '/billing', icon: <CreditCard className="h-4 w-4" /> },
+      { label: 'Invoices', href: '/billing/invoices', icon: <Receipt className="h-4 w-4" /> },
+    ],
+  },
+  {
     title: 'Data',
     items: [
       { label: 'Exports', href: '/exports', icon: <Download className="h-4 w-4" /> },
@@ -92,8 +102,11 @@ const adminNav: NavGroup[] = [
     title: 'Customers',
     items: [
       { label: 'Customer Accounts', href: '/admin/customers', icon: <Users className="h-4 w-4" /> },
+      { label: 'Contact Messages', href: '/admin/contact-messages', icon: <MessageSquare className="h-4 w-4" /> },
       { label: 'Postal Routes', href: '/admin/routes', icon: <Route className="h-4 w-4" /> },
       { label: 'Sign-up Page', href: '/admin/signup', icon: <FormInput className="h-4 w-4" /> },
+      { label: 'Plans', href: '/admin/plans', icon: <CreditCard className="h-4 w-4" /> },
+      { label: 'Payment Gateways', href: '/admin/gateways', icon: <Receipt className="h-4 w-4" /> },
     ],
   },
   {

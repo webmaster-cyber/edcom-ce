@@ -43,6 +43,91 @@ GIF = b"\x47\x49\x46\x38\x39\x61\x01\x00\x01\x00\x80\x01\x00\x00\x00\x00\xFF\xFF
 rdb: redis.StrictRedis | None = None  # type: ignore
 
 
+def check_plan_limits(db: Any, cid: str, check_type: str = "send", count: int = 1) -> None:
+    """Check if the current company is within plan limits.
+
+    Args:
+        db: Database connection
+        cid: Company ID
+        check_type: "send" for send limits, "subscriber" for subscriber limits
+        count: Number of items being added (for subscriber checks)
+
+    Raises:
+        Exception with descriptive message if limit exceeded.
+    """
+    from .db import json_obj
+
+    sub = json_obj(
+        db.row(
+            "select id, cid, data from subscriptions where data->>'company_id' = %s and data->>'status' in ('active', 'trialing') limit 1",
+            cid,
+        )
+    )
+    if sub is None:
+        # No subscription = no plan-based limits (legacy/admin accounts)
+        return
+
+    plan = json_obj(
+        db.row(
+            "select id, cid, data from plans where id = %s",
+            sub.get("plan_id", ""),
+        )
+    )
+    if plan is None:
+        return
+
+    if check_type == "send":
+        limit = plan.get("send_limit_monthly")
+        if limit is not None:
+            month_start = datetime.utcnow().replace(day=1).isoformat() + "Z"
+            current = (
+                db.single(
+                    "select coalesce(sum(send), 0) from hourstats where cid = %s and hour >= %s",
+                    cid,
+                    month_start,
+                )
+                or 0
+            )
+            if current + count > limit:
+                raise Exception(
+                    "Monthly send limit reached (%s/%s). Please upgrade your plan."
+                    % (current, limit)
+                )
+
+    elif check_type == "subscriber":
+        limit = plan.get("subscriber_limit")
+        if limit is not None:
+            current = 0
+            if db.single("select to_regclass('contacts.data_%s')" % cid):
+                current = db.single(
+                    "select count(distinct data->>'email') from contacts.data_%s" % cid
+                ) or 0
+            if current + count > limit:
+                raise Exception(
+                    "Subscriber limit reached (%s/%s). Please upgrade your plan."
+                    % (current, limit)
+                )
+
+    # Feature gate check
+    features = plan.get("features", [])
+    if isinstance(features, list):
+        feature_map = {
+            "send": "broadcasts",
+            "funnel_send": "funnels",
+            "transactional_send": "transactional",
+            "api": "api access",
+            "templates": "templates",
+            "analytics": "analytics",
+        }
+        required_feature = feature_map.get(check_type)
+        if required_feature:
+            feat = next((f for f in features if f.get("name", "").lower() == required_feature), None)
+            if feat is not None and not feat.get("included", True):
+                raise Exception(
+                    "Your plan does not include %s. Please upgrade." % required_feature
+                )
+
+
 def debug() -> None:
     import debugpy
 

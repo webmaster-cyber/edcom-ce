@@ -39,6 +39,7 @@ from .shared.utils import (
     browser_names,
     MTA_TIMEOUT,
     fix_sink_url,
+    check_plan_limits,
 )
 from .shared.segments import (
     get_segment_rows,
@@ -619,6 +620,12 @@ def check_funnels() -> None:
                 ):
                     try:
                         cid = company["id"]
+
+                        try:
+                            check_plan_limits(db, cid, "funnel_send")
+                        except Exception:
+                            log.info("Plan limit reached for %s, skipping funnel send", cid)
+                            continue
 
                         domainthrottles = load_domain_throttles(db, company)
 

@@ -47,6 +47,7 @@ from .shared.utils import (
     gen_screenshot,
     set_onboarding,
     fix_sink_url,
+    check_plan_limits,
 )
 from .shared.segments import (
     segment_get_params,
@@ -1137,6 +1138,11 @@ class CampaignStart(object):
             raise Exception(
                 "No postal route configured for you to send mail with. Please contact your administrator."
             )
+
+        try:
+            check_plan_limits(db, campcid, "send")
+        except Exception as e:
+            raise falcon.HTTPBadRequest(title="Plan limit reached", description=str(e))
 
         ok = db.single(
             """update campaigns set data = data || %s where id = %s and (data->>'sent_at' is null or data->>'sent_at' = '') returning true""",

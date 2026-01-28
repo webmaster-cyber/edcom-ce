@@ -23,6 +23,7 @@ from .shared.utils import (
     run_task,
     parse_txnid,
     get_webroot,
+    check_plan_limits,
 )
 from .shared.send import (
     send_backend_mail,
@@ -509,6 +510,12 @@ class Send(object):
         company = db.companies.get(mycid)
         if company is None:
             raise falcon.HTTPForbidden()
+
+        try:
+            check_plan_limits(db, mycid, "transactional_send")
+        except Exception as e:
+            raise falcon.HTTPBadRequest(title="Plan limit reached", description=str(e))
+
         availroutes = company["routes"]
 
         if doc.get("route", ""):

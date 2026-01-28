@@ -203,6 +203,54 @@ Extended Phase 5 with additional features based on reference designs:
 
 ---
 
+## 2026-01-28 — Phase 12: Marketing Site Complete
+
+### Marketing Site (sendmail-marketing) ✅
+- Astro + Keystatic CMS project scaffolded in `../sendmail-marketing/`
+- Hybrid rendering mode with Node.js adapter for CMS admin
+- Tailwind CSS styling with CSS custom properties for brand colors
+
+### CMS Content Management ✅
+- **Singletons**: Homepage, About, Contact, Site Settings
+- **Collections**: Features, Feature Groups, FAQs, Testimonials
+- All content editable via `/keystatic` admin UI
+
+### Site Settings (CMS-Driven Branding) ✅
+- Logo, white logo, and favicon uploadable via CMS
+- Brand colors (primary, hover, dark) configurable as hex values
+- Site name, description, app URL, API URL, signup ID
+- Contact email, social links (Twitter, LinkedIn)
+
+### Pages ✅
+- Homepage with hero, features, CTA sections
+- Features page loading from CMS feature groups
+- Pricing page fetching plans from `/api/public/plans`
+- About page with story, mission, values
+- Contact page with form and contact info
+- Privacy Policy and Terms of Service pages
+
+### Contact Form ✅
+- Form submits to `/api/public/contact` endpoint
+- Honeypot field for basic spam prevention
+- Rate limiting (5 requests per IP per hour)
+- Phone number field (optional)
+- Email obfuscation (base64 encoded, decoded client-side)
+
+### Admin Contact Messages ✅
+- `ContactMessagesPage.tsx` in main app for viewing submissions
+- Table view with status (new/read/replied), search, filtering
+- Modal detail view with reply via email button
+- Bulk actions: mark read, mark replied, delete
+- Route: `/admin/contact-messages`
+
+### Backend Additions ✅
+- `contact_messages` table in `schema/billing.sql`
+- `PublicContact` endpoint in `api/billing.py` (public, no auth)
+- `ContactMessages` and `ContactMessage` admin endpoints
+- Custom SQL (not CRUDCollection) to avoid company ID filtering
+
+---
+
 ## Remaining Migration Phases
 
 ### Phase 8: Admin Backend 🔲 (In Progress)
@@ -232,10 +280,11 @@ Extended Phase 5 with additional features based on reference designs:
 - [ ] Upgrade/downgrade UI
 - [ ] Usage indicators and warning emails
 
-### Phase 12: Marketing Site 🔲
-- [ ] Astro project for sendmail.co.zw
-- [ ] Keystatic CMS for content editing
-- [ ] SEO optimization
+### Phase 12: Marketing Site ✅
+- [x] Astro project for sendmail.co.zw
+- [x] Keystatic CMS for content editing
+- [x] Contact form with spam prevention
+- [ ] SEO optimization (meta tags, sitemap, etc.)
 
 ### Phase 13: Cutover 🔲
 - [ ] Update Docker/nginx to serve new client

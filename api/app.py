@@ -53,6 +53,7 @@ from . import campaigns
 from . import funnels
 from . import events
 from . import transactional
+from . import billing
 
 import logging
 
@@ -195,6 +196,9 @@ allowedpaths = [
     re.compile(r"^/api/loginfrontend"),
     re.compile(r"^/signup/"),
     re.compile(r"^/api/signupaction/"),
+    re.compile(r"^/api/public/"),
+    re.compile(r"^/api/webhooks/paynow$"),
+    re.compile(r"^/api/webhooks/stripe$"),
 ]
 
 
@@ -473,6 +477,9 @@ class Invite(object):
                             "type": "object",
                             "additionalProperties": {"type": "string"},
                         },
+                        "plan_id": {
+                            "type": "string",
+                        },
                     },
                     "required": [
                         "email",
@@ -532,8 +539,10 @@ class Invite(object):
                     "frontend": frontend["id"],
                     "code": code,
                     "params": doc["params"],
+                    "plan_id": doc.get("plan_id", "") or signupsettings.get("default_plan", ""),
                     "tries": 0,
                     "requireconfirm": signupsettings["requireconfirm"],
+                    "signup": doc["signup"],
                 }
             )
             db.set_cid(None)
@@ -1017,7 +1026,12 @@ class Register(object):
                         inreview = False
                         trialend = None
                         approvedat = None
-                        if frontend.get("useapprove", False):
+                        # Check approval requirement from frontend or signup settings
+                        signup_settings = db.signupsettings.get(u.get("signup", "")) if u.get("signup") else None
+                        require_approval = frontend.get("useapprove", False)
+                        if signup_settings and signup_settings.get("require_approval", False):
+                            require_approval = True
+                        if require_approval:
                             inreview = True
                         else:
                             if frontend.get("usetrial", False):
@@ -1060,6 +1074,37 @@ class Register(object):
                         )
                         with db.transaction():
                             contacts.initialize_cid(db, c)
+
+                        # Create subscription if plan_id was provided during signup
+                        plan_id = u.get("plan_id", "")
+                        if plan_id:
+                            plan = db.plans.get(plan_id)
+                            if plan:
+                                is_free = plan.get("is_free", False)
+                                plan_trial = plan.get("trial_days", 0)
+                                sub_status = "active" if is_free else ("trialing" if plan_trial > 0 else "active")
+                                sub_trial_end = (
+                                    (datetime.utcnow() + timedelta(days=plan_trial)).isoformat() + "Z"
+                                    if plan_trial > 0
+                                    else None
+                                )
+                                db.set_cid(frontend["cid"])
+                                db.subscriptions.add(
+                                    {
+                                        "company_id": c,
+                                        "plan_id": plan_id,
+                                        "status": sub_status,
+                                        "trial_start": n if plan_trial > 0 else None,
+                                        "trial_end": sub_trial_end,
+                                        "current_period_start": n,
+                                        "current_period_end": (datetime.utcnow() + timedelta(days=30)).isoformat() + "Z",
+                                        "gateway": "free" if is_free else "",
+                                        "cancel_at_period_end": False,
+                                        "created": n,
+                                    }
+                                )
+                                db.set_cid(None)
+
                         copyto = db.companies.get(c)
                         assert copyto is not None
                         copy_example(db, copyto)
@@ -3830,6 +3875,23 @@ app.add_route("/api/track", events.Track())
 app.add_route("/l", events.Track())
 app.add_route("/api/links/{id}", events.Link())
 
+# Billing routes
+app.add_route("/api/plans", billing.Plans())
+app.add_route("/api/plans/{id}", billing.Plan())
+app.add_route("/api/public/plans", billing.PublicPlans())
+app.add_route("/api/subscription", billing.Subscription())
+app.add_route("/api/subscription/usage", billing.SubscriptionUsage())
+app.add_route("/api/billing/invoices", billing.Invoices())
+app.add_route("/api/billing/invoices/{id}", billing.Invoice())
+app.add_route("/api/billing/checkout", billing.Checkout())
+app.add_route("/api/billing/upgrade", billing.PlanUpgrade())
+app.add_route("/api/billing/gateways", billing.PaymentGateways())
+app.add_route("/api/billing/gateways/{id}", billing.PaymentGatewayConfig())
+app.add_route("/api/webhooks/paynow", billing.PaynowWebhook())
+app.add_route("/api/webhooks/stripe", billing.StripeWebhook())
+app.add_route("/api/public/contact", billing.PublicContact())
+app.add_route("/api/admin/contact-messages", billing.ContactMessages())
+app.add_route("/api/admin/contact-messages/{id}", billing.ContactMessage())
 
 def ready() -> None:
     log.info("Application worker process ready")

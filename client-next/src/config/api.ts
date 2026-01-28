@@ -15,7 +15,7 @@ export function configureInterceptors(
       config.headers['X-Auth-Cookie'] = cookie
       // Don't send impersonate header for admin-level endpoints
       // These endpoints need admin context, not impersonated customer context
-      const adminEndpoints = ['/api/sinks', '/api/dkimentries', '/api/companies', '/api/frontends', '/api/policies', '/api/routes', '/api/domaingroups', '/api/routepolicies', '/api/mailgun', '/api/ses', '/api/smtprelays', '/api/userlogs', '/api/allstats', '/api/ipstats', '/api/companybroadcasts', '/api/warmups']
+      const adminEndpoints = ['/api/sinks', '/api/dkimentries', '/api/companies', '/api/frontends', '/api/policies', '/api/routes', '/api/domaingroups', '/api/routepolicies', '/api/mailgun', '/api/ses', '/api/smtprelays', '/api/userlogs', '/api/allstats', '/api/ipstats', '/api/companybroadcasts', '/api/warmups', '/api/plans', '/api/billing/gateways']
       const isAdminEndpoint = adminEndpoints.some(ep => config.url?.startsWith(ep))
       if (impersonate && !isAdminEndpoint) {
         config.headers['X-Auth-Impersonate'] = impersonate
